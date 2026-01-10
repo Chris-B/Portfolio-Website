@@ -8,8 +8,8 @@ import { useFrame, useLoader, useThree } from "@react-three/fiber";
 
 import { useVideoStore } from "~/providers/video-store-provider"
 
-import VideoShader0 from "~/components/3d/shaders/VideoShader0";
-import VideoShader1 from "~/components/3d/shaders/VideoShader1";
+import VideoShader0 from "~/app/video/components/shaders/VideoShader0";
+import VideoShader1 from "~/app/video/components/shaders/VideoShader1";
 
 function loadVideo(videoSrc: string) {
     const video = document.createElement("video");
@@ -38,12 +38,7 @@ function loadAudio(audioBuffer: AudioBuffer) {
 
 }
 
-
-type VideoProps = {
-    type?: string,
-}
-
-export const VideoComponent = ({type='MusicShader' }: VideoProps) => {
+export const VideoComponent = () => {
     const configuration = `
           r = bass + 0.5;
           g = bass;
@@ -97,13 +92,8 @@ export const VideoComponent = ({type='MusicShader' }: VideoProps) => {
     });
 
 
-    if(type === 'MusicShader' && audio){
-        return (<MusicShader audio={audio} position={[0,0,-200]} scale={[20,20,20]} />);
-    }else if(type === 'VideoPointsShader' && audio){
-        return (<VideoPointsShader audio={audio} video={videoElement} configuration={configuration} />);
-    }else{
-        return null;
-    }
+    return audio ? <VideoPointsShader audio={audio} video={videoElement} configuration={configuration} /> : null
+    
 }
 
 type Shader = {
@@ -121,178 +111,6 @@ type Shader = {
       fragmentShader: string
 }
 
-function getShader(texture: THREE.Texture): Shader {
-  return {
-    uniforms: {
-      iTime: { value: 0 },
-      iResolution: { value: new THREE.Vector3(1, 1, 1) },
-
-      bass: { value: 0.0 },
-      mid: { value: 0.0 },
-      treble: { value: 0.0 },
-
-      iChannel0: { value: texture },
-    },
-    vertexShader: `
-
-        varying vec2 vUv;
-
-        uniform float iTime;
-        uniform sampler2D iChannel0;
-
-        uniform float bass;
-        uniform float mid;
-        uniform float treble;
-
-
-			void main() {
-                vUv = uv;
-
-                vec4 textureVideo = texture2D( iChannel0, vec2( vUv.x, vUv.y) );
-                float gray = (textureVideo.r + textureVideo.g + textureVideo.b) / 3.0;
-                float threshold = 300.0;
-                vec3 pos = position;
-
-                float r = bass + 0.5;
-                float g = treble;
-                float b = mid;
-                float distance = 400.0;
-                float distance2 = 300.0;
-                float distance3 = 100.0;
-
-                float modX = mod(pos.x,0.05);
-                float modY = mod(pos.y,0.05);
-                pos.z += modY * gray * bass * 30.0;
-
-
-                float size = 1.0;
-				gl_PointSize = size ;
-				gl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );
-
-			}
-        `,
-    fragmentShader: `
-        #include <common>
-
-        varying vec2 vUv;
-
-        uniform vec3 iResolution;
-        uniform float iTime;
-
-        uniform float bass;
-        uniform float mid;
-        uniform float treble;
-        uniform sampler2D iChannel0;
-
-        vec3 colorA = vec3(0.3,0.0,0.0);
-        vec3 colorB = vec3(1.0,0.0,0.0);
-
-        void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-
-            vec2 uv = fragCoord.xy / iResolution.xy;
-            uv.x *= iResolution.x / iResolution.y;
-
-
-            //vec3 color = mix(colorA,colorB,bass+0.3);
-
-            vec4 textureVideo = texture2D( iChannel0, vec2( vUv.x, vUv.y) );
-            float gray = (textureVideo.r + textureVideo.g + textureVideo.b) / 3.0;
-            vec3 color_red = vec3(bass+gray,0.0,0.0);
-            vec3 color = textureVideo.rgb;
-            color = ( textureVideo.rgb  ) * vec3(bass + 0.5 , bass + 0.5 , bass + 0.5 ) * 1.0;
-
-
-
-            fragColor = vec4(color, 1.0 );
-
-
-        }
-        void main() {
-            mainImage(gl_FragColor, vUv * iResolution.xy);
-        }
-        `,
-  };
-}
-
-type MusicShaderProps = {
-    audio: THREE.Audio,
-    img?: string,
-    geometry?: THREE.PlaneGeometry,
-    position?: [number,number,number],
-    rotation?: [number,number,number],
-    scale?: [number,number,number]
-}
-
-export const MusicShader = ({ audio,
-                              img='assets/img/masnaisraelb.png',
-                              geometry=new THREE.PlaneGeometry(3,3,100,100),
-                              position=[0,0,0],
-                              rotation=[0,0,0],
-                              scale = [1,1,1] }: MusicShaderProps) => {
-
-    /** Getting mesh ready*/
-    const { scene } = useThree();
-    const texture = useLoader(THREE.TextureLoader,img);
-    const [ mesh, setMesh] = useState<THREE.Mesh>();
-    useEffect(()=>{
-        const { vertexShader, fragmentShader, uniforms } = getShader(texture);
-        const material = new THREE.ShaderMaterial({
-            vertexShader: vertexShader,
-            fragmentShader: fragmentShader,
-            uniforms: uniforms
-        });
-        material.side = THREE.DoubleSide;
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(...position);
-        mesh.rotation.set(...rotation);
-        mesh.scale.set(...scale);
-        scene.add(mesh);
-        setMesh(mesh);
-        return () => {
-            scene.remove(mesh);
-            mesh.geometry.dispose();
-            mesh.material.dispose();
-            texture.dispose();
-        };
-    },[]);
-
-    const analyser = useMemo(()=>{
-        if(audio){
-            const fftSize = 2048;
-            return new THREE.AudioAnalyser(audio, fftSize);
-        }
-    },[audio]);
-    const frequencyRange = useMemo(()=>{
-        return {
-            bass: [20, 140],
-            lowMid: [140, 400],
-            mid: [400, 2600],
-            highMid: [2600, 5200],
-            treble: [5200, 14000],
-        }
-    },[]);
-    useFrame(({clock})=>{
-        let data,bass,mid,treble;
-        if(analyser){
-            data = analyser.getFrequencyData();
-            bass = getFrequencyRangeValue(frequencyRange.bass, data);
-            mid = getFrequencyRangeValue(frequencyRange.mid, data);
-            treble = getFrequencyRangeValue(frequencyRange.treble, data);
-            // console.log( 'bass ' + bass + ' / mid ' + mid + ' / treble ' + treble)
-        }
-        if(mesh){
-            const material = mesh.material as THREE.ShaderMaterial;
-            material.uniforms.iTime!.value = clock.elapsedTime;
-            material.uniforms.bass!.value = bass;
-            material.uniforms.mid!.value = mid;
-            material.uniforms.treble!.value = treble;
-        }
-    });
-
-    return null;
-
-}
-
 type VideoShaderProps = {
     audio: THREE.Audio,
     video: HTMLVideoElement | null,
@@ -306,17 +124,8 @@ type VideoShaderProps = {
 
 /** Arguments explanation:
  * audio: THREE.audio
- * video: string => 'https://www.youtube.com/watch?v=CIb...' || 'assets/...mp4' || '' (webcam)
- * configuration: string =>
- *                              const configuration = `
-                                    r = bass + 0.5;
-                                    g = treble;
-                                    b = mid;
-                                    color.r = bass;
-                                    color.g = mid;
-                                    color.b = mid
-                                    distance = 2;
-                                `;
+ * video: HTML Video Element
+ * configuration: Shader Configuration String
  */
 export const VideoPointsShader = ({ audio, video, shaderType='VideoShader0', configuration, position=[0,0,0], rotation=[Math.PI, Math.PI, 0], scale=[1,1,1], colorInput = new THREE.Vector3(0,0,0) }: VideoShaderProps) => {
     configuration = configuration || `
@@ -379,7 +188,6 @@ export const VideoPointsShader = ({ audio, video, shaderType='VideoShader0', con
             bass = getFrequencyRangeValue(frequencyRange.bass, data);
             mid = getFrequencyRangeValue(frequencyRange.mid, data);
             treble = getFrequencyRangeValue(frequencyRange.treble, data);
-            // console.log( 'bass ' + bass + ' / mid ' + mid + ' / treble ' + treble)
         }
         if(particles){
             const material = particles.material as THREE.ShaderMaterial;

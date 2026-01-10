@@ -32,7 +32,7 @@ export const defaultInitState: VideoState = {
   videoLoaded: false,
   videoElement: null,
   audio: null,
-  videoSrc: null, //'/music-videos/Zeds Dead - Alive.mp4'
+  videoSrc: null,
   audioBuffer: null
 }
 

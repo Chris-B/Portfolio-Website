@@ -20,7 +20,7 @@ const projects: Project[] = [
     id: 1,
     name: "Portfolio Website",
     description: "My personal website showcasing my software engineering skills",
-    github: "https://github.com/Chris-B/portfolio",
+    github: "https://github.com/Chris-B/Portfolio-Website",
     live: "https://chrisbarclay.dev",
     writeup: "This project was an exploration into creating immersive web experiences using React Three Fiber.\nThe goal was to showcase my portfolio in a unique, cyberpunk-themed 3D environment.\nI faced challenges in creating intuitive user interactions within a 3D space. To overcome this, I designed a hybrid 2D/3D UI for better usability.\nThe projects and experience pages are standard 2D web UI.",
     technologies: ["Next.JS", "TypeScript", "Tailwind CSS", "ShadCN", "Three.js", "React Three Fiber", "tRPC", "Zustand"]

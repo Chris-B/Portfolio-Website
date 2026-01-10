@@ -2,8 +2,8 @@
 
 import { useMemo, useRef, useEffect } from "react";
 import { PerspectiveCamera, Environment } from "@react-three/drei";
-import { ChrisAvatar } from '~/components/3d/Avatar'
-import { Office } from '~/components/3d/Office'
+import { ChrisAvatar } from '~/app/dashboard/components/avatar-component'
+import { Office } from '~/app/dashboard/components/office-component'
 
 import { useCanvas } from '~/context/canvas-context'
 

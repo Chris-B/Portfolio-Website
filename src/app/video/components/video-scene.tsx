@@ -11,7 +11,7 @@ import {
   import { Canvas, useFrame, useThree } from "@react-three/fiber";
 
   import { OrbitControls } from "@react-three/drei";
-  import { VideoComponent } from "~/components/3d/shaders/VideoComponent";
+  import { VideoComponent } from "~/app/video/components/video-component";
 
 import { useVideoStore } from "~/providers/video-store-provider"
 
@@ -41,7 +41,7 @@ import { useVideoStore } from "~/providers/video-store-provider"
             <ambientLight args={[0x443333, 0.5]} />
             { videoSrc ? (
               <Suspense>
-                <VideoComponent type='VideoPointsShader' />
+                <VideoComponent/>
               </Suspense>
             ) : null }
             {/* <Picture /> */}

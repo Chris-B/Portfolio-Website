@@ -1,10 +1,10 @@
-import AvatarControls from "~/components/ui/avatar-controls";
+import AvatarControls from "~/app/dashboard/components/avatar-controls";
 
 import { Suspense } from "react";
 import Loading from "~/app/loading";
-import SceneCanvas from "~/components/3d/Scene";
+import SceneCanvas from "~/app/dashboard/components/avatar-scene";
 
-import NowPlayingCard from "~/components/ui/now-playing";
+import NowPlayingCard from "~/app/dashboard/components/now-playing";
 
 import { HydrateClient } from "~/trpc/server";
 

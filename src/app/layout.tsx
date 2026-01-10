@@ -4,9 +4,9 @@ import { type Metadata } from "next";
 
 import { AvatarStoreProvider } from "~/providers/avatar-store-provider"
 import { VideoStoreProvider } from "~/providers/video-store-provider"
-import Footer from "~/components/ui/footer";
+import Footer from "~/components/footer";
 
-import Navigation from "~/components/ui/navigation";
+import Navigation from "~/components/header";
 
 import { TRPCReactProvider } from '~/trpc/react'
 import { HydrateClient } from "~/trpc/server";

@@ -1,7 +1,7 @@
 import { HydrateClient } from "~/trpc/server";
 
-import VideoScene from "~/components/3d/VideoScene";
-import VideoControls from "~/components/ui/video-controls";
+import VideoScene from "~/app/video/components/video-scene";
+import VideoControls from "~/app/video/components/video-controls";
 
 export default function Home() {
 
