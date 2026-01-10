@@ -32,7 +32,7 @@ export default function Home() {
 
       {/* Content */}
       <div className="z-20 text-center relative">
-        <h1 className="text-6xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 animate-pulse">
+        <h1 className="text-6xl font-bold mb-8 text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500 animate-pulse">
           Chris Barclay
         </h1>
         <Link href="/dashboard">

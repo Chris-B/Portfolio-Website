@@ -60,7 +60,7 @@ function ProjectCard({ project }: { project: Project }) {
   return (
     <Card className="w-full bg-black/80 text-white border border-purple-500 hover:border-cyan-400 transition-colors">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+        <CardTitle className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500">
           {project.name}
         </CardTitle>
         <CardDescription className="text-md text-gray-300">{project.description}</CardDescription>
@@ -86,7 +86,7 @@ function ProjectCard({ project }: { project: Project }) {
           <Button
             variant="outline"
             size="sm"
-            className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700
+            className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700
                        text-white border border-transparent transition-all duration-300 ease-in-out
                        hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:shadow-[0_0_20px_rgba(139,92,246,0.7)]"
             asChild
@@ -99,7 +99,7 @@ function ProjectCard({ project }: { project: Project }) {
           <Button
             variant="outline"
             size="sm"
-            className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700
+            className="bg-linear-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700
                        text-white border border-transparent transition-all duration-300 ease-in-out
                        hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:shadow-[0_0_20px_rgba(139,92,246,0.7)]"
             asChild
@@ -137,7 +137,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-20 px-5">
-      <h1 className="text-4xl font-bold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+      <h1 className="text-4xl font-bold mb-8 text-center text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500">
         Projects
       </h1>
       <div className="space-y-8">

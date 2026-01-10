@@ -28,7 +28,7 @@ export default function NowPlayingCard() {
         className="md:hidden mb-2 bg-black/30 border border-purple-500 text-white hover:bg-black/50"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">Spotify</span>
+        <span className="text-sm font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500">Spotify</span>
       </Button>
       <div
         className={`backdrop-blur-md w-36 md:w-40 mx-auto p-2 bg-black/30 border border-purple-500 rounded-lg shadow-lg text-white transition-all duration-300 ease-in-out
@@ -37,7 +37,7 @@ export default function NowPlayingCard() {
       >
         <div className="flex items-center mb-2">
           <Music className="w-3 h-3 mr-1 text-cyan-400" />
-          <h2 className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+          <h2 className="text-xs font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500">
             Now Playing
           </h2>
         </div>
@@ -48,7 +48,7 @@ export default function NowPlayingCard() {
             className="w-20 h-20 md:w-24 md:h-24 rounded-md mb-2 border border-purple-500"
           />
           <div className="text-center w-full">
-            <h3 className="text-[11px] md:text-xs font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 truncate">
+            <h3 className="text-[11px] md:text-xs font-semibold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500 truncate">
               {song.item.name}
             </h3>
             <p className="text-[9px] md:text-[10px] text-gray-300 truncate">

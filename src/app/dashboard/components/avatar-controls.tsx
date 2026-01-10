@@ -65,7 +65,7 @@ export default function AvatarControls() {
           {/*<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>*/}
           {/*  <DialogTrigger asChild>*/}
           {/*    <Button*/}
-          {/*      className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700*/}
+          {/*      className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700*/}
           {/*      text-white border border-transparent transition-all duration-300 ease-in-out*/}
           {/*      hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:shadow-[0_0_20px_rgba(139,92,246,0.7)]"*/}
           {/*    >*/}
@@ -74,7 +74,7 @@ export default function AvatarControls() {
           {/*  </DialogTrigger>*/}
           {/*  <DialogContent className="sm:max-w-[425px] bg-black/80 border border-purple-500/50 text-white">*/}
           {/*    <DialogHeader>*/}
-          {/*      <DialogTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">Enter Speech</DialogTitle>*/}
+          {/*      <DialogTitle className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500">Enter Speech</DialogTitle>*/}
           {/*    </DialogHeader>*/}
           {/*    <div className="grid gap-4 py-4">*/}
           {/*      <div className="relative">*/}
@@ -100,7 +100,7 @@ export default function AvatarControls() {
           {/*</Dialog>*/}
 
           <Button onClick={introduction}
-            className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700
+            className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700
             text-white border border-transparent transition-all duration-300 ease-in-out
             hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:shadow-[0_0_20px_rgba(139,92,246,0.7)]"
           >

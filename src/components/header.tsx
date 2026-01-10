@@ -20,10 +20,10 @@ export default function Navigation() {
   if (pathname === '/') return null
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xs">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
-          <Link href="/" className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+          <Link href="/" className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500">
             Chris Barclay
           </Link>
           <div className="hidden md:flex space-x-4">
@@ -39,7 +39,7 @@ export default function Navigation() {
                   }
                   rounded-md overflow-hidden
                   before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full
-                  before:bg-gradient-to-r before:from-purple-500/20 before:to-cyan-400/20 before:opacity-0
+                  before:bg-linear-to-r before:from-purple-500/20 before:to-cyan-400/20 before:opacity-0
                   hover:before:opacity-100 before:transition-opacity before:duration-300
                 `}
               >

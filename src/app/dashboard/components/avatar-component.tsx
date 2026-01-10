@@ -68,7 +68,7 @@ const ActionNames = ['SittingIdle','SitToStand','StandingIdleNew','StandToSit', 
 
 export function ChrisAvatar(props: JSX.IntrinsicElements['group']) {
   const group = useRef<Group>(null)
-  const { nodes, materials, animations } = useGLTF('/ChrisAvatar.glb', true) as GLTFResult
+  const { nodes, materials, animations } = useGLTF('/ChrisAvatar.glb') as GLTFResult
   const { actions, mixer } = useAnimations(animations, group)
   const { isSitting, isSpeaking, stopSpeaking, isDancing } = useAvatarStore((state) => state)
 

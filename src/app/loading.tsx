@@ -32,7 +32,7 @@ export default function Loading() {
 
       {/* Loading content */}
       <div className="z-20 text-center relative">
-        <h2 className="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 animate-pulse">
+        <h2 className="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500 animate-pulse">
           Initializing...
         </h2>
         <Loader2 className="w-16 h-16 animate-spin text-cyan-500 mx-auto" />

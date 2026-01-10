@@ -40,7 +40,7 @@ function ExperienceCard({ experience }: { experience: Experience }) {
   return (
     <Card className="w-full bg-black/80 text-white border border-purple-500 hover:border-cyan-400 transition-colors">
       <CardHeader>
-        <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+        <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500">
           {experience.title}
         </CardTitle>
         <CardDescription className="text-gray-300">
@@ -62,7 +62,7 @@ export default function ExperiencePage() {
 
   return (
     <div className="min-h-screen bg-black text-white  pt-20 pb-20 px-5">
-      <h1 className="text-4xl font-bold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+      <h1 className="text-4xl font-bold mb-8 text-center text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500">
         Experience
       </h1>
 

@@ -34,7 +34,7 @@ export default function NotFound() {
       {/* 404 content */}
       <div className="z-20 text-center relative">
         <AlertTriangle className="w-24 h-24 text-yellow-500 mx-auto mb-6 animate-pulse" />
-        <h1 className="text-6xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 animate-pulse">
+        <h1 className="text-6xl font-bold mb-4 text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500 animate-pulse">
           404
         </h1>
         <h2 className="text-3xl font-bold mb-6 text-gray-300">Page Not Found</h2>
