@@ -1,12 +1,12 @@
 'use client'
 
 import { Button } from "~/components/ui/button";
-import { useVideoStore } from "~/providers/video-store-provider";
+import { useVideoStore } from "~/app/video/stores/video-store";
 import { Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Input } from "~/components/ui/input";
-
-import { api } from "~/trpc/react";
+import { useVideoQuery } from "../api/use-video";
+import type { VideoResponse } from "../schemas/video-schemas";
 
 export default function VideoControls() {
   const { videoLoaded, isPlaying, setIsPlaying, audio, videoElement, videoSrc, setVideoSrc } = useVideoStore((state) => state);
@@ -14,7 +14,7 @@ export default function VideoControls() {
   const [inputLink, setInputLink] = useState("");
   const isIPhone = true;
   const [iphoneAudio, setIphoneAudio] = useState<HTMLAudioElement | null>(null);
-  const [inputSubmitted, setInputSubmitted] = useState(false);
+  const [submittedUrl, setSubmittedUrl] = useState("");
 
   const toggleVideo = () => {
     if (videoSrc && audio && videoElement) {
@@ -43,40 +43,34 @@ export default function VideoControls() {
     }
   };
 
-  // Updated to match the new youtubeRouter API
-  const { data: videoResponse, refetch, isLoading } = api.video.getVideoStream.useQuery(
-    { url: inputLink },
-    {
-      enabled: false, // Disable automatic fetching
-    }
-  );
+  const videoQuery = useVideoQuery(submittedUrl);
 
   useEffect(() => {
-    const fetchVideo = async () => {
-      if (inputSubmitted && videoResponse) {
-        try {
-          const response = await fetch(videoResponse.videoUrl);
-          const videoBlob = await response.blob();
-          const videoUrl = URL.createObjectURL(videoBlob);
-          setVideoSrc(videoUrl); // Assuming you want to set this as the video source
-        } catch (error) {
-          console.error("Error fetching video:", error);
-        }
-      }
-    };
-    void fetchVideo();
-  }, [inputSubmitted, videoResponse]);
+    if (!submittedUrl) return;
+    void videoQuery.refetch();
+  }, [submittedUrl]);
+
+  useEffect(() => {
+    if (!videoQuery.data) return;
+
+    const response: VideoResponse = videoQuery.data;
+    if (response.status === "error") {
+      console.error("Video API error:", { message: response.text, debug: response.debug });
+      return;
+    }
+
+    setVideoSrc(response.url);
+  }, [videoQuery.data, setVideoSrc]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setInputSubmitted(true);
-    void refetch(); // Trigger the API call
+    setSubmittedUrl(inputLink);
   };
 
   return (
     <div className="fixed left-1/2 top-[87%] z-50 -translate-x-1/2 -translate-y-1/2 scale-75 transform rounded-lg border border-purple-500/30 bg-black/30 p-4 text-white backdrop-blur-md md:scale-100">
       <div className="flex h-16 flex-col items-center justify-center">
-        {!videoSrc && !inputSubmitted ? (
+        {!videoSrc && !submittedUrl ? (
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
               type="url"
@@ -88,9 +82,9 @@ export default function VideoControls() {
             <Button
               type="submit"
               className="bg-cyan-600 text-white hover:bg-cyan-700"
-              disabled={isLoading}
+              disabled={videoQuery.isFetching}
             >
-              {isLoading ? (
+              {videoQuery.isFetching ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 "Set Video"

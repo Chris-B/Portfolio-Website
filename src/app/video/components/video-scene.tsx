@@ -13,7 +13,7 @@ import {
   import { OrbitControls } from "@react-three/drei";
   import { VideoComponent } from "~/app/video/components/video-component";
 
-import { useVideoStore } from "~/providers/video-store-provider"
+import { useVideoStore } from "~/app/video/stores/video-store"
 
   export function Scene() {
 

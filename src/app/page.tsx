@@ -16,83 +16,83 @@ export default function Home() {
   ))
 
   return (
-    <main className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Cyberpunk-inspired background elements */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
-      </div>
+      <main className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
+        {/* Cyberpunk-inspired background elements */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
 
-      {/* Grid lines */}
-      <div className="absolute inset-0 z-10 grid grid-cols-6 gap-2 opacity-20">
-        {verticalLines}
-        {horizontalLines}
-      </div>
+        {/* Grid lines */}
+        <div className="absolute inset-0 z-10 grid grid-cols-6 gap-2 opacity-20">
+          {verticalLines}
+          {horizontalLines}
+        </div>
 
-      {/* Content */}
-      <div className="z-20 text-center relative">
-        <h1 className="text-6xl font-bold mb-8 text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500 animate-pulse">
-          Chris Barclay
-        </h1>
-        <Link href="/dashboard">
-          <button className="group">
-            <span className="sr-only">Enter</span>
-            {'ENTER'.split('').map((letter, index) => (
-              <span
-                key={index}
-                className="inline-block text-5xl font-bold transition-all duration-300 ease-in-out
-                           hover:text-cyan-400 group-hover:animate-float"
-                style={{
-                  textShadow: `
-                    1px 1px 0 #8B5CF6,
-                    2px 2px 0 #7C3AED,
-                    3px 3px 0 #6D28D9,
-                    4px 4px 0 #5B21B6,
-                    5px 5px 0 #4C1D95,
-                    6px 6px 10px rgba(0, 0, 0, 0.5)
-                  `,
-                  animation: `float 2s ease-in-out infinite ${index * 0.1}s`,
-                  color: '#E5E7EB', // Light gray color
-                }}
-              >
-                {letter}
-              </span>
-            ))}
-          </button>
-        </Link>
-      </div>
+        {/* Content */}
+        <div className="z-20 text-center relative">
+          <h1 className="text-6xl font-bold mb-8 text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500 animate-pulse">
+            Chris Barclay
+          </h1>
+          <Link href="/dashboard">
+            <button className="group">
+              <span className="sr-only">Enter</span>
+              {'ENTER'.split('').map((letter, index) => (
+                <span
+                  key={index}
+                  className="inline-block text-5xl font-bold transition-all duration-300 ease-in-out
+                            hover:text-cyan-400 group-hover:animate-float"
+                  style={{
+                    textShadow: `
+                      1px 1px 0 #8B5CF6,
+                      2px 2px 0 #7C3AED,
+                      3px 3px 0 #6D28D9,
+                      4px 4px 0 #5B21B6,
+                      5px 5px 0 #4C1D95,
+                      6px 6px 10px rgba(0, 0, 0, 0.5)
+                    `,
+                    animation: `float 2s ease-in-out infinite ${index * 0.1}s`,
+                    color: '#E5E7EB', // Light gray color
+                  }}
+                >
+                  {letter}
+                </span>
+              ))}
+            </button>
+          </Link>
+        </div>
 
-      {/* Keyframe animations */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
+        {/* Keyframe animations */}
+        <style jsx>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
           }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
+          @keyframes blob {
+            0% {
+              transform: translate(0px, 0px) scale(1);
+            }
+            33% {
+              transform: translate(30px, -50px) scale(1.1);
+            }
+            66% {
+              transform: translate(-20px, 20px) scale(0.9);
+            }
+            100% {
+              transform: translate(0px, 0px) scale(1);
+            }
           }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
+          .animate-blob {
+            animation: blob 7s infinite;
           }
-          100% {
-            transform: translate(0px, 0px) scale(1);
+          .animation-delay-2000 {
+            animation-delay: 2s;
           }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
-    </main>
+          .animation-delay-4000 {
+            animation-delay: 4s;
+          }
+        `}</style>
+      </main>
   )
 }

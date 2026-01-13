@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 
-import { useVideoStore } from "~/providers/video-store-provider"
+import { useVideoStore } from "~/app/video/stores/video-store";
 
 import VideoShader0 from "~/app/video/components/shaders/VideoShader0";
 import VideoShader1 from "~/app/video/components/shaders/VideoShader1";

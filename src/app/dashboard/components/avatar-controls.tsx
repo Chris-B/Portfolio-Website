@@ -1,32 +1,76 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog"
-import { Mic, MessageSquare, Send } from "lucide-react"
-import { useAvatarStore } from "~/providers/avatar-store-provider"
+import { Loader2, Send } from "lucide-react"
+import { useAvatarStore } from "~/app/dashboard/stores/avatar-store"
 
 import { useCanvas } from '~/context/canvas-context'
+import { useAskMutation } from '~/app/dashboard/api/use-ask'
+import type { AskResponse } from '~/app/dashboard/schemas/ask-schemas'
 
 export default function AvatarControls() {
-  const [speechText, setSpeechText] = useState('')
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([])
+  const messagesEndRef = useRef<HTMLDivElement | null>(null)
+
+  const [inputText, setInputText] = useState('')
 
   const { isCanvasLoaded } = useCanvas()
 
-  const { isSitting, togglePosition, introSpeech, isSpeaking, isDancing, toggleDancing } = useAvatarStore((state) => state)
+  const { setResponse } = useAvatarStore((state) => state)
 
-  const handleSpeech = () => {
-    // Here you would add logic to trigger text-to-speech with the speechText
-    console.log('Speaking:', speechText)
-    setSpeechText('')
-    setIsDialogOpen(false)
-  }
+  const askMutation = useAskMutation()
 
-  const introduction = () => {
-    if(!isSpeaking) {
-      introSpeech()
+  const suggestedQuestions = useMemo(
+    () => [
+      "What kind of software do you build?",
+      "What tech stack do you use most?",
+      "What is your current job?",
+      "What are your thoughts on golfing?",
+    ],
+    []
+  )
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages, isLoading])
+
+  const sendMessage = async (text: string) => {
+    const trimmed = text.trim()
+    if (!trimmed || isLoading) return
+
+    setMessages((prev) => [...prev, { role: 'user', content: trimmed }])
+    setIsLoading(true)
+    setInputText("")
+
+    try {
+      const response: AskResponse = await askMutation.mutateAsync(trimmed)
+
+      if (response.status === 'error') {
+        throw new Error(response.text)
+      }
+
+      setResponse(response)
+
+      const assistantText = response.text?.trim() || "Sorry, I couldn't generate a response."
+      setMessages((prev) => [...prev, { role: 'assistant', content: assistantText }])
+
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        const cause =
+          error instanceof Error && "cause" in error && error.cause
+            ? String(error.cause)
+            : undefined;
+    
+        console.error("Ask API error:", { message, cause });
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: "Sorry — something went wrong while fetching the response." },
+        ])
+      } finally {
+      setIsLoading(false)
     }
   }
 
@@ -35,79 +79,76 @@ export default function AvatarControls() {
   }
 
   return (
-    <>
-      <div className="fixed left-1/2 top-[64%] transform -translate-x-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white p-2 border border-purple-500/30 rounded-lg z-50  md:scale-100 scale-75">
-        <div className="flex space-x-4">
-          <Button
-            onClick={togglePosition}
-            className={` ${
-              isSitting
-                ? "bg-purple-600 hover:bg-purple-700"
-                : "bg-cyan-600 hover:bg-cyan-700"
-            } text-white border border-transparent transition-all duration-300 ease-in-out
-            hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:shadow-[0_0_20px_rgba(139,92,246,0.7)]`}
-          >
-            {isSitting ? "Stand" : "Sit"}
-          </Button>
-
-          <Button
-            onClick={toggleDancing}
-            className={` ${
-              isDancing
-                ? "bg-purple-600 hover:bg-purple-700"
-                : "bg-cyan-600 hover:bg-cyan-700"
-            } text-white border border-transparent transition-all duration-300 ease-in-out
-            hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:shadow-[0_0_20px_rgba(139,92,246,0.7)]`}
-          >
-            {isDancing ? "Stop" : "Dance"}
-          </Button>
-
-          {/*<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>*/}
-          {/*  <DialogTrigger asChild>*/}
-          {/*    <Button*/}
-          {/*      className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700*/}
-          {/*      text-white border border-transparent transition-all duration-300 ease-in-out*/}
-          {/*      hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:shadow-[0_0_20px_rgba(139,92,246,0.7)]"*/}
-          {/*    >*/}
-          {/*      <MessageSquare className="h-4 w-4" />*/}
-          {/*    </Button>*/}
-          {/*  </DialogTrigger>*/}
-          {/*  <DialogContent className="sm:max-w-[425px] bg-black/80 border border-purple-500/50 text-white">*/}
-          {/*    <DialogHeader>*/}
-          {/*      <DialogTitle className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500">Enter Speech</DialogTitle>*/}
-          {/*    </DialogHeader>*/}
-          {/*    <div className="grid gap-4 py-4">*/}
-          {/*      <div className="relative">*/}
-          {/*        <Input*/}
-          {/*          type="text"*/}
-          {/*          placeholder="Enter text to speak..."*/}
-          {/*          value={speechText}*/}
-          {/*          onChange={(e) => setSpeechText(e.target.value)}*/}
-          {/*          className="w-full bg-black/50 border-purple-500/50 text-white placeholder-gray-400*/}
-          {/*          focus:border-cyan-400 focus:ring-cyan-400/50 transition-all duration-300 ease-in-out*/}
-          {/*          hover:shadow-[0_0_10px_rgba(139,92,246,0.3)] focus:shadow-[0_0_15px_rgba(6,182,212,0.5)]"*/}
-          {/*        />*/}
-          {/*        <Button*/}
-          {/*          onClick={handleSpeech}*/}
-          {/*          className="absolute right-1 top-1 p-1 bg-transparent hover:bg-purple-500/20*/}
-          {/*          text-purple-400 hover:text-cyan-400 rounded-full transition-all duration-300 ease-in-out"*/}
-          {/*        >*/}
-          {/*          <Send size={18} />*/}
-          {/*        </Button>*/}
-          {/*      </div>*/}
-          {/*    </div>*/}
-          {/*  </DialogContent>*/}
-          {/*</Dialog>*/}
-
-          <Button onClick={introduction}
-            className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700
-            text-white border border-transparent transition-all duration-300 ease-in-out
-            hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:shadow-[0_0_20px_rgba(139,92,246,0.7)]"
-          >
-            <Mic className="h-4 w-4" />
-          </Button>
+    <div className="fixed left-1/2 bottom-[5%] z-50 w-[92vw] -translate-x-1/2 transform md:w-[520px]">
+      <div className="rounded-lg border border-purple-500/30 bg-black/40 p-3 text-white backdrop-blur-md">
+        <div className="max-h-56 space-y-2 overflow-y-auto pr-1">
+          {messages.length === 0 ? (
+            <div className="text-sm text-white/70">
+              Ask me anything about my experience, projects, or what I’m building.
+            </div>
+          ) : (
+            messages.map((m, idx) => (
+              <div
+                key={`${m.role}-${idx}`}
+                className={
+                  m.role === 'user'
+                    ? "ml-auto w-fit max-w-[85%] rounded-2xl bg-cyan-600/20 px-3 py-2 text-sm"
+                    : "mr-auto w-fit max-w-[85%] rounded-2xl bg-purple-600/20 px-3 py-2 text-sm"
+                }
+              >
+                {m.content}
+              </div>
+            ))
+          )}
+          {isLoading ? (
+            <div className="mr-auto flex w-fit max-w-[85%] items-center gap-2 rounded-2xl bg-purple-600/20 px-3 py-2 text-sm text-white/80">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Thinking…
+            </div>
+          ) : null}
+          <div ref={messagesEndRef} />
         </div>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          {suggestedQuestions.map((q) => (
+            <Button
+              key={q}
+              type="button"
+              variant="secondary"
+              className="h-7 rounded-full bg-white/5 px-3 text-xs text-white/80 hover:bg-white/10"
+              onClick={() => {
+                void sendMessage(q)
+              }}
+              disabled={isLoading}
+            >
+              {q}
+            </Button>
+          ))}
+        </div>
+
+        <form
+          className="mt-3 flex items-center gap-2"
+          onSubmit={(e) => {
+            e.preventDefault()
+            void sendMessage(inputText)
+          }}
+        >
+          <Input
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Ask me anything…"
+            disabled={isLoading}
+            className="h-10 flex-1 border-purple-500/30 bg-black/30 text-white placeholder:text-white/50"
+          />
+          <Button
+            type="submit"
+            disabled={isLoading || !inputText.trim()}
+            className="h-10 bg-cyan-600 text-white hover:bg-cyan-700"
+          >
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          </Button>
+        </form>
       </div>
-    </>
+    </div>
   )
 }

@@ -13,7 +13,7 @@ const navItems = [
   { name: "Experience", path: "/experience" },
 ]
 
-export default function Navigation() {
+export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
 
