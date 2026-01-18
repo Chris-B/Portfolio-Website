@@ -1,80 +1,96 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X } from "lucide-react"
+import { Menu, X, Sparkles } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
+/**
+ * Header navigation items.
+ * Routes
+ * - Home
+ * - World
+ */
 const navItems = [
   { name: "Home", path: "/" },
   { name: "World", path: "/world" },
 ]
 
+/**
+ * Header Component. Used as the header for the website.
+ * Contains title and navigation items.
+ * 
+ * @returns Header Component
+ */
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
 
-  if (pathname === '/') return null
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  /* No header on home page */
+  if (pathname != '/world') return null
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/75 border-cyan-500/30 border backdrop-blur-xs">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
-          <Link href="/" className="text-3xl font-bold text-transparent bg-clip-text bg-cyan-500 animate-pulse mr-2">
-            Chris Barclay
+    <nav 
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-background/90 backdrop-blur-md border-b border-foreground/10"
+    >
+      <div className="container mx-auto px-6">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link href="/" className="group flex items-center gap-2">
+            <div className="relative">
+              <div className="absolute -inset-1 bg-linear-to-r from-primary to-secondary rounded-lg opacity-0 group-hover:opacity-75 blur transition-opacity duration-300" />
+              <div className="relative flex items-center justify-center w-8 h-8 bg-background border border-foreground/20 rounded-lg group-hover:border-primary/50 transition-colors">
+                <Sparkles className="w-4 h-4 text-primary" />
+              </div>
+            </div>
+            <span className="text-xl font-bold bg-linear-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+              Chris Barclay
+            </span>
           </Link>
-          <div className="hidden md:flex space-x-4">
+
+          {/* Desktop Navigation */}
+          <div className="flex items-center gap-2">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 href={item.path}
-                className={`
-                  relative px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out
-                  ${pathname === item.path
-                    ? "text-cyan-500 border border-cyan-500 shadow-[0_0_10px_#22d3ee] bg-cyan-500/10"
-                    : "text-cyan-500 border border-cyan-500/50 hover:border-cyan-400 hover:text-cyan-400 hover:shadow-[0_0_15px_#22d3ee]"
-                  }
-                  rounded-md overflow-hidden
-                  before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full
-                  before:bg-cyan-500/10 before:opacity-0
-                  hover:before:opacity-100 before:transition-opacity before:duration-300
-                `}
+                className="relative group px-4 py-2"
               >
-                <span className="relative z-10">{item.name}</span>
+                {/* Hover background */}
+                <div className={`absolute inset-0 rounded-lg transition-all duration-300 ${
+                  pathname === item.path
+                    ? "bg-linear-to-r from-primary/20 to-secondary/20 border border-primary/50"
+                    : "bg-transparent group-hover:bg-foreground/5 border border-transparent group-hover:border-foreground/10"
+                }`} />
+                
+                {/* Active indicator */}
+                {pathname === item.path && (
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-linear-to-r from-primary to-secondary rounded-full" />
+                )}
+                
+                <span className={`relative z-10 text-sm font-medium transition-colors duration-300 ${
+                  pathname === item.path
+                    ? "text-primary"
+                    : "text-foreground/70 group-hover:text-white"
+                }`}>
+                  {item.name}
+                </span>
               </Link>
             ))}
+            
           </div>
-          <button
-            className="md:hidden text-cyan-400 hover:text-purple-400 transition-colors"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
       </div>
-      {isOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                href={item.path}
-                className={`
-                  block px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ease-in-out
-                  ${pathname === item.path
-                    ? "text-cyan-500 border border-cyan-500 shadow-[0_0_10px_#22d3ee] bg-cyan-500/10"
-                    : "text-cyan-500 border border-cyan-500/20 hover:border-cyan-400 hover:text-cyan-400 hover:shadow-[0_0_15px_#22d3ee]"
-                  }
-                `}
-                onClick={() => setIsOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
     </nav>
   )
 }

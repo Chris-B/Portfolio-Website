@@ -7,21 +7,35 @@ import { useMusicVideoStore } from "@/app/world/stores/music-videos-store";
 import { useShallow } from "zustand/shallow";
 import VideoMeshShader from "./shaders/VideoMeshShader";
 
+/**
+ * Load video element from source URL
+ * Configured to work on all browsers including mobile.
+ * 
+ * @param videoSrc - Video source URL
+ * @param posterSrc - Optional poster image source URL
+ * @returns HTMLVideoElement
+ */
 function loadVideo(videoSrc: string, posterSrc?: string): HTMLVideoElement {
     const video = document.createElement("video");
     video.autoplay = false;
-    video.muted = true; // Video is muted - audio comes from separate Three.js Audio
+    video.muted = true;
     video.playsInline = true;
     video.loop = true;
     video.preload = "auto";
     video.crossOrigin = "anonymous";
-    video.setAttribute('webkit-playsinline', 'true'); // iOS Safari
+    video.setAttribute('webkit-playsinline', 'true');
     if (posterSrc) video.poster = posterSrc;
     video.src = videoSrc;
     video.load();
     return video;
 }
 
+/**
+ * Load audio buffer from source URL using three.js AudioLoader.
+ * 
+ * @param audioSrc - Audio source URL
+ * @returns Promise<AudioBuffer>
+ */
 function loadAudioAsync(audioSrc: string): Promise<AudioBuffer> {
     return new Promise((resolve, reject) => {
         const loader = new AudioLoader();
@@ -34,6 +48,12 @@ function loadAudioAsync(audioSrc: string): Promise<AudioBuffer> {
     });
 }
 
+/**
+ * Setup three.js audio and analyser from audio buffer.
+ * 
+ * @param audioBuffer - Audio buffer
+ * @returns { audio: Audio, analyser: AudioAnalyser }
+ */
 function createAudioFromBuffer(audioBuffer: AudioBuffer): { audio: Audio, analyser: AudioAnalyser } {
     const audioListener = new AudioListener();
     const audio = new Audio(audioListener);
@@ -47,6 +67,9 @@ function createAudioFromBuffer(audioBuffer: AudioBuffer): { audio: Audio, analys
     return { audio, analyser };
 }
 
+/**
+ * Props for VideoMesh3D component.
+ */
 type VideoMesh3DProps = {
     id: string;
     videoSrc: string;
@@ -57,6 +80,20 @@ type VideoMesh3DProps = {
     subdivisions?: number;
 }
 
+/**
+ * VideoMesh3D component.
+ * The workhorse of the 3D music video room.
+ * Handles the configuration and management of the video and audio elements, textures, and shader material.
+ * 
+ * @param id - The id of the video used for accessing the zustand store
+ * @param videoSrc - The source url for the video
+ * @param posterSrc - The source url for the poster image
+ * @param position - The position of the video mesh
+ * @param rotation - The rotation of the video mesh
+ * @param scale - The scale of the video mesh
+ * @param subdivisions - The number of subdivisions for the video mesh
+ * @returns The VideoMesh3D component
+ */
 export function VideoMesh3D({ 
     id, 
     videoSrc,
@@ -70,12 +107,13 @@ export function VideoMesh3D({
     const geometryRef = useRef<PlaneGeometry | null>(null);
     const materialRef = useRef<ShaderMaterial | null>(null);
     
+    /* Zustand store values for the managed video mesh. Accessed shallowly by id. */
     const [videoElement, videoLoaded, audioLoaded, audio, depthEffect, currentTime, isPlaying, volume, readyForControl] = useMusicVideoStore(id, useShallow((state) => [state.videoElement, state.videoLoaded, state.audioLoaded, state.audio, state.depthEffect, state.currentTime, state.isPlaying, state.volume, state.readyForControl]));
     const [setLoaded, setAudioLoaded, setVideoElement, setAudio, setCurrentTime, setReadyForControl] = useMusicVideoStore(id, useShallow((state) => [state.setLoaded, state.setAudioLoaded, state.setVideoElement, state.setAudio, state.setCurrentTime, state.setReadyForControl]));
 
     const lastCurrentTimeRef = useRef(currentTime);
 
-    // Load video and create audio from it
+    /* Load video on mount and set video element in zustand store. */
     useEffect(() => {
         if (!videoLoaded) {
             const video = loadVideo(videoSrc, posterSrc);
@@ -86,7 +124,7 @@ export function VideoMesh3D({
         }
     }, [videoSrc, posterSrc, videoLoaded, setVideoElement, setLoaded]);
 
-    // Load audio asynchronously (separate from video to avoid blocking)
+    /* Load audio asynchronously on mount(separate from video to avoid blocking) */
     useEffect(() => {
         if (!audioLoaded) {
             loadAudioAsync(videoSrc)
@@ -102,6 +140,7 @@ export function VideoMesh3D({
         }
     }, [videoSrc, audioLoaded, setAudio, setAudioLoaded]);
 
+    /* Frequency ranges for audio analyser */
     const frequencyRange = {
         bass: [20, 140],
         lowMid: [140, 400],
@@ -113,14 +152,14 @@ export function VideoMesh3D({
     const analyserRef = useRef<AudioAnalyser | null>(null);
     const videoTextureRef = useRef<VideoTexture | null>(null);
 
-    // Load poster texture
+    /* Load poster texture if available */
     const posterTexture = useMemo(() => {
         if (!posterSrc) return null;
         const loader = new TextureLoader();
         return loader.load(posterSrc);
     }, [posterSrc]);
 
-    // Create shader material (create VideoTexture lazily to avoid GPU spikes when multiple screens mount)
+    /* Create shader material and initial video texture. Texture is set to poster if available to lessen load time, otherwise video. */
     const { geometry, material } = useMemo(() => {
         if (!videoElement) return { geometry: null, material: null };
         const geo = new PlaneGeometry(scale[0], scale[1], subdivisions, Math.floor(subdivisions * (scale[1] / scale[0])));
@@ -136,62 +175,54 @@ export function VideoMesh3D({
         return { geometry: geo, material: mat };
     }, [videoElement, scale, subdivisions, posterTexture]);
 
-    // Update depth effect without recreating material
+    /* Update material depth effect when value in store changes */
     useEffect(() => {
         if (material) {
             material.uniforms.displacementScale!.value = depthEffect;
         }
     }, [material, depthEffect]);
 
-    // Store refs for cleanup (so cleanup only runs on unmount, not on every state change)
+    /* Store refs for cleanup */
     const audioRef = useRef(audio);
     const videoElementRef = useRef(videoElement);
     const posterTextureRefForCleanup = useRef(posterTexture);
-    
+
     useEffect(() => { audioRef.current = audio; }, [audio]);
     useEffect(() => { videoElementRef.current = videoElement; }, [videoElement]);
     useEffect(() => { posterTextureRefForCleanup.current = posterTexture; }, [posterTexture]);
 
-    // Cleanup resources on unmount only (empty deps array)
+    /* Cleanup resources on unmount to avoid memory leaks */
     useEffect(() => {
         return () => {
-            // Dispose video texture
             if (videoTextureRef.current) {
                 videoTextureRef.current.dispose();
                 videoTextureRef.current = null;
             }
-            // Dispose poster texture
             if (posterTextureRefForCleanup.current) {
                 posterTextureRefForCleanup.current.dispose();
             }
-            // Dispose geometry
             if (geometryRef.current) {
                 geometryRef.current.dispose();
                 geometryRef.current = null;
             }
-            // Dispose material
             if (materialRef.current) {
                 materialRef.current.dispose();
                 materialRef.current = null;
             }
-            // Stop and disconnect audio
             if (audioRef.current) {
                 if (audioRef.current.isPlaying) audioRef.current.stop();
                 audioRef.current.disconnect();
             }
-            // Pause and cleanup video element
             if (videoElementRef.current) {
                 videoElementRef.current.pause();
                 videoElementRef.current.src = '';
                 videoElementRef.current.load();
             }
-            // Clear analyser
             analyserRef.current = null;
         };
     }, []);
 
-
-    // Handle user seeking via slider
+    /* Handle user seeking via slider. Only seek if currentTime changed from video controls (user dragging slider). */
     useEffect(() => {
         if (!videoElement) return;
         // Only seek if currentTime changed from external source (user dragging slider)
@@ -208,7 +239,11 @@ export function VideoMesh3D({
         lastCurrentTimeRef.current = currentTime;
     }, [currentTime, videoElement, audio]);
 
-    // Handle play/pause - sync video and audio playback
+    /**
+    * Logic for handling video and audio playback. 
+    * Hook is primarilytriggered by isPlaying state from zustand store. 
+    * Fallback handling to ensure video and audio do not become stale.
+    */
     useEffect(() => {
         if (!videoElement || !audio) {
             return;
@@ -279,19 +314,19 @@ export function VideoMesh3D({
         }
     }, [isPlaying, videoElement, audio, material]);
 
+    /* Update audio volume when value in store changes */
     useEffect(() => {
         if (!audio) return;
         audio.setVolume(volume);
     }, [audio, volume]);
 
-    // Update shader uniforms and sync currentTime to store
+    /* Update shader uniforms and update currentTime in the store for live UI updates */
     useFrame(({ clock }) => {
         if (!meshRef.current) return;
         
         const mat = meshRef.current.material as ShaderMaterial;
         mat.uniforms.iTime!.value = clock.elapsedTime;
 
-        // Force video texture to update each frame (critical for Safari)
         if (videoTextureRef.current && videoElement && !videoElement.paused) {
             videoTextureRef.current.needsUpdate = true;
         }
@@ -303,7 +338,6 @@ export function VideoMesh3D({
             mat.uniforms.treble!.value = getFrequencyRangeValue(frequencyRange.treble, data);
         }
 
-        // Sync video currentTime to store for UI updates
         if (videoElement && Math.abs(videoElement.currentTime - lastCurrentTimeRef.current) > 0.5) {
             lastCurrentTimeRef.current = videoElement.currentTime;
             setCurrentTime(videoElement.currentTime);
@@ -323,6 +357,12 @@ export function VideoMesh3D({
     );
 }
 
+/**
+ * Helper function to calculate the average frequency value for a given range.
+ * @param frequencyRange [low, high]
+ * @param frequencyData 
+ * @returns number - The average frequency value for the given range.
+ */
 function getFrequencyRangeValue(frequencyRange: number[], frequencyData: Uint8Array) {
     const nyquist = 48000 / 2;
     const lowIndex = Math.round(frequencyRange[0]! / nyquist * frequencyData.length);

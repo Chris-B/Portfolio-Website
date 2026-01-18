@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { AskRequestSchema } from "@/app/world/schemas/ask-schemas";
 
+/**
+ * Handles POST requests to the /api/ask endpoint.
+ * Utilized by the avatar chat feature in the Q&A room.
+ * 
+ * @param req - The request object containing the JSON payload. Parses the payload using AskRequestSchema.
+ * @returns A NextResponse object containing the JSON response {status, AskResponseSchema} from the upstream ask endpoint.
+ */
+
 export async function POST(req: Request) {
   try {
     const base = process.env.API_ENDPOINT;

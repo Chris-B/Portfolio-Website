@@ -2,13 +2,15 @@ import { useMemo } from 'react'
 import { Mesh } from 'three'
 import { useCompressedGLTF } from '@/app/world/hooks/use-compressed-gltf'
 
+/**
+ * CharacterModel component for displaying the user's character model within the scene.
+ * 
+ * @returns CharacterModel primitivecomponent
+ */
 export default function CharacterModel() {
   const { scene } = useCompressedGLTF('/world/Character-Compressed.glb')
-  
-  // Clone scene to prevent reuse issues on mobile Safari
   const clonedScene = useMemo(() => {
     const clone = scene.clone(true)
-    // Clone materials to prevent shared material issues
     clone.traverse((child) => {
       if (child instanceof Mesh && child.material) {
         const mats = Array.isArray(child.material) ? child.material : [child.material]

@@ -1,9 +1,18 @@
 'use client'
 
-import { useCallback, useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useJoystickControls } from 'ecctrl'
 import { Button } from "@/components/ui/button"
 
+/**
+ * The movement controls component.
+ * Displays the on-screen controls for touch devices.
+ * Features:
+ * - Joystick control for movement with auto-sprint
+ * - Jump button for jumping
+ * 
+ * @returns The movement controls component.
+ */
 export default function MovementControls() {
   const joystickRef = useRef<HTMLDivElement>(null)
   const jumpRef = useRef<HTMLButtonElement>(null)
@@ -82,11 +91,11 @@ export default function MovementControls() {
       {/* Joystick */}
       <div
         ref={joystickRef}
-        className="relative w-32 h-32 rounded-full bg-black/75 border-cyan-500/30 border backdrop-blur-sm pointer-events-auto touch-none"
+        className="relative w-32 h-32 rounded-full bg-background/75 border-primary/30 border backdrop-blur-sm pointer-events-auto touch-none"
       >
         {/* Joystick knob */}
         <div
-          className="absolute w-16 h-16 rounded-full bg-white/60 backdrop-blur-md"
+          className="absolute w-16 h-16 rounded-full bg-foreground/60 backdrop-blur-md"
           style={{
             left: '50%',
             top: '50%',
@@ -98,7 +107,7 @@ export default function MovementControls() {
       {/* Jump button */}
       <Button
         ref={jumpRef}
-        className="w-20 h-20 rounded-full bg-black/75 border-cyan-500/30 border backdrop-blur-sm pointer-events-auto touch-none flex items-center justify-center text-white font-bold"
+        className="w-20 h-20 rounded-full bg-background/75 border-primary/30 border backdrop-blur-sm pointer-events-auto touch-none flex items-center justify-center text-foreground font-bold"
       >
         JUMP
       </Button>

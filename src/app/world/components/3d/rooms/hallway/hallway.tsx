@@ -2,25 +2,22 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { useCompressedGLTF } from '@/app/world/hooks/use-compressed-gltf'
-import { PointLight, Mesh } from 'three'
+import { Mesh } from 'three'
 import { DoorSensor } from '@/app/world/components/3d/additions/door-sensor'
 import { RigidBody, MeshCollider, useRapier } from '@react-three/rapier'
-import { Vector3 } from 'three'
-import { MapProps, type DoorProps } from '@/app/world/types/world-types'
+import { SceneProps } from '@/app/world/types/world-types'
 import DoorSign from '@/app/world/components/3d/additions/door-sign'
+import { HallwayDoors } from '@/app/world/tables/world-tables'
 
-const doors: DoorProps[] = [
-  {id: 'A', name: 'Chris Q&A', position: new Vector3(2, 1.2, -2), rotation: 0, doorSignPosition: new Vector3(2, 2.632, -1.895)},
-  {id: 'B', name: '3D Fun Zone', position: new Vector3(10, 1.2, 2), rotation: Math.PI, doorSignPosition: new Vector3(10, 2.632, 1.895)},
-  {id: 'C', name: 'Coming Soon', position: new Vector3(18, 1.2, -2), rotation: 0, doorSignPosition: new Vector3(18, 2.632, -1.895)},
-  {id: 'D', name: 'Coming Soon', position: new Vector3(26, 1.2, 2), rotation: Math.PI, doorSignPosition: new Vector3(26, 2.632, 1.895)},
-  {id: 'E', name: 'Coming Soon', position: new Vector3(34, 1.2, -2), rotation: 0, doorSignPosition: new Vector3(34, 2.632, -1.895)},
-  {id: 'F', name: 'Coming Soon', position: new Vector3(42, 1.2, 2), rotation: Math.PI, doorSignPosition: new Vector3(42, 2.632, 1.895)},
-  {id: 'G', name: 'Coming Soon', position: new Vector3(50, 1.2, -2), rotation: 0, doorSignPosition: new Vector3(50, 2.632, -1.895)},
-  {id: 'H', name: 'Coming Soon', position: new Vector3(60, 1.2, 0), rotation: - Math.PI / 2, doorSignPosition: new Vector3(60, 2.632, 0)},
-]
-
-export function Hallway({ onReady, onDoorEnter }: MapProps) {
+/**
+ * Hallway component for the scene. Connects all rooms in the scene.
+ * 
+ * @param {SceneProps} onReady - Callback function to be called when the room is ready
+ * @param {SceneProps} onDoorEnter - Callback function to be called when the door is entered
+ * 
+ * @returns Hallway component with trimesh colliders configured.
+ */
+export function Hallway({ onReady, onDoorEnter }: SceneProps) {
   const { scene } = useCompressedGLTF('/world/Hallway-Compressed.glb')
   const { world } = useRapier()
 
@@ -77,7 +74,7 @@ export function Hallway({ onReady, onDoorEnter }: MapProps) {
           <primitive object={clonedScene} />
         </MeshCollider>
       </RigidBody>
-      {doors.filter((door) => door.name !== 'Coming Soon').map((door) => (
+      {HallwayDoors.filter((door) => door.name !== 'Coming Soon').map((door) => (
         <DoorSensor 
           key={door.id}
           name={door.id}
@@ -87,7 +84,7 @@ export function Hallway({ onReady, onDoorEnter }: MapProps) {
           }}
         />
       ))}
-      {doors.map((door, index) => (
+      {HallwayDoors.map((door, index) => (
         <DoorSign
           key={index}
           text={door.name}

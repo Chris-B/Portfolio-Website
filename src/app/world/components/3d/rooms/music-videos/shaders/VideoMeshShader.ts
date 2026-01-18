@@ -1,7 +1,18 @@
 'use client'
 
-import { Texture, ShaderMaterial, Vector3, DoubleSide } from 'three';
+import { Texture, ShaderMaterial, DoubleSide } from 'three';
 
+/**
+ * Creates a displacement shader material for a 3D video mesh.
+ * Used in the 3D music video room.
+ * 
+ * The shader renders the video through a custom material that adds time-based 
+ * and audio-reactive distortion and uses the video’s luminance as a displacement 
+ * map to create a 3D depth effect on the screen surface.
+ * 
+ * @param texture - The video texture to be used in the shader.
+ * @returns A shader material for the video mesh.
+ */
 export default function VideoMeshShader(texture: Texture) {
     return new ShaderMaterial({
         side: DoubleSide,

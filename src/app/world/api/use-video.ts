@@ -1,6 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { VideoResponseSchema } from "@/app/world/schemas/video-schemas";
 
+/**
+ * TanStack React Query mutation hook for video fetching api endpoint.
+ * 
+ * @returns VideoResponseSchema 
+ * {
+ *  status: z.enum(['success', 'error']),
+ *  url: z.string().url(),
+ * }
+ */
 export function useVideoQuery(url: string) {
   return useQuery({
     queryKey: ["video", url],

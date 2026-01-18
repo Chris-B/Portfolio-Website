@@ -3,26 +3,30 @@
 import { useEffect, useState, useMemo } from 'react'
 import { Mesh } from 'three'
 import { RigidBody, MeshCollider, useRapier } from '@react-three/rapier'
-import { DoorProps } from '@/app/world/types/world-types'
-import { Vector3 } from 'three'
-import { MapProps } from '@/app/world/types/world-types'
+import { SceneProps } from '@/app/world/types/world-types'
 import { DoorSensor } from '@/app/world/components/3d/additions/door-sensor'
 import { VideoScreen, ImageScreen } from '@/app/world/components/3d/additions/media-screens'
 import { ChrisAvatar } from '@/app/world/components/3d/rooms/q&a/avatar-component'
 import DoorSign from '@/app/world/components/3d/additions/door-sign'
 import { useCompressedGLTF } from '@/app/world/hooks/use-compressed-gltf'
+import { TargetedDirectionalLight } from '@/app/world/components/3d/additions/targeted-directional-light'
+import { QAndARoomDoor } from '@/app/world/tables/world-tables'
 
-const door: DoorProps = {id: 'RoomA', name: 'Exit', position: new Vector3(0, 1.2, -6), rotation: 0, doorSignPosition: new Vector3(0, 2.632, -5.885)}
-
-export function RoomQA({ onReady, onDoorEnter }: MapProps) {
+/**
+ * Q&A Room Model/Component
+ * 
+ * @param {SceneProps} onReady - Callback function to be called when the room is ready
+ * @param {SceneProps} onDoorEnter - Callback function to be called when the door is entered
+ * 
+ * @returns Q&A Room Model/Component with 2D tv video and laptop image.
+ */
+export function RoomQA({ onReady, onDoorEnter }: SceneProps) {
     const { scene } = useCompressedGLTF('/world/rooms/room-a/RoomA-Compressed.glb')
     const { world } = useRapier()
     const [collidersReady, setCollidersReady] = useState(false)
 
-    // Clone scene to prevent reuse issues on mobile Safari
     const clonedScene = useMemo(() => {
         const clone = scene.clone(true)
-        // Clone materials to prevent shared material issues with Environment component
         clone.traverse((child) => {
             if (child instanceof Mesh && child.material) {
                 const mats = Array.isArray(child.material) ? child.material : [child.material]
@@ -37,12 +41,11 @@ export function RoomQA({ onReady, onDoorEnter }: MapProps) {
         return clone
     }, [scene])
 
-    // Check when colliders are ready
     useEffect(() => {
         if (collidersReady) return
 
         let attempts = 0
-        const maxAttempts = 300 // ~5 seconds at 60fps
+        const maxAttempts = 300
 
         const checkColliders = () => {
             attempts++
@@ -53,7 +56,6 @@ export function RoomQA({ onReady, onDoorEnter }: MapProps) {
             } else if (attempts < maxAttempts) {
                 requestAnimationFrame(checkColliders)
             } else {
-                // Timeout - proceed anyway to prevent black screen
                 console.warn('Collider check timed out, proceeding anyway')
                 setCollidersReady(true)
                 onReady?.()
@@ -73,19 +75,23 @@ export function RoomQA({ onReady, onDoorEnter }: MapProps) {
 
             <ChrisAvatar />
 
-            {door && <DoorSensor
-                key={door.id}
-                name={door.id}
-                position={door.position.toArray()}
+            <TargetedDirectionalLight position={[0, 4, 0]} target={[0, 0, 5.5]} intensity={0.5} />
+                                        
+            <ambientLight intensity={0.4} />
+
+            {QAndARoomDoor && <DoorSensor
+                key={QAndARoomDoor.id}
+                name={QAndARoomDoor.id}
+                position={QAndARoomDoor.position.toArray()}
                 onEnter={() => {
-                    onDoorEnter?.(door.id, [0, 1.5, 0])
+                    onDoorEnter?.(QAndARoomDoor.id, [0, 1.5, 0])
                 }}
             />}
 
-            {door && <DoorSign
+            {QAndARoomDoor && <DoorSign
                 text="Exit"
-                position={[door.doorSignPosition.x, door.doorSignPosition.y, door.doorSignPosition.z]}
-                rotation={[0, door.rotation, 0]}
+                position={[QAndARoomDoor.doorSignPosition.x, QAndARoomDoor.doorSignPosition.y, QAndARoomDoor.doorSignPosition.z]}
+                rotation={[0, QAndARoomDoor.rotation, 0]}
                 scale={[0.44, 0.44, 0.44]}
             />}
 

@@ -7,25 +7,18 @@ import { type SkinnedMesh, type Object3D, LoopOnce } from "three";
 import { useFrame } from "@react-three/fiber";
 import { useShallow } from "zustand/shallow";
 import { useCompressedGLTF } from "@/app/world/hooks/use-compressed-gltf";
+import { LipSyncJSON } from "@/app/world/types/world-types";
+import { AvatarVisemeTargets, AvatarActionNames } from "@/app/world/tables/world-tables";
 
-type LipSyncJSON = {
-  mouthCues: Array<{ start: number; end: number; value: string }>
-}
 
-const visemeTargets: Record<string, string> = {
-  A: "viseme_PP",
-  B: "viseme_kk",
-  C: "viseme_I",
-  D: "viseme_aa",
-  E: "viseme_O",
-  F: "viseme_U",
-  G: "viseme_FF",
-  H: "viseme_TH",
-  X: "viseme_PP",
-};
 
-const ActionNames = ['SittingIdle', 'SitToStand', 'StandingIdleNew', 'StandToSit', 'avaturn_animation', 'SillyDancing'] as const
-
+/**
+ * Chris Avatar component.
+ * An avatar of myself that can be animated and lip synced.
+ * Used in the Q&A room to communicate with the user.
+ * 
+ * @returns {JSX.Element} The Chris Avatar component with current animation and lip sync.
+ */
 export function ChrisAvatar() {
   const { scene, nodes, animations } = useCompressedGLTF('/world/rooms/room-a/ChrisAvatar-Compressed.glb')
   const { actions, mixer } = useAnimations(animations, scene)
@@ -34,6 +27,7 @@ export function ChrisAvatar() {
     (state) => [state.response, state.ensureAudio]
   ))
 
+  /* Mesh targets for lip sync */
   const headMesh = nodes.Head_Mesh002 as SkinnedMesh | undefined
   const teethMesh = nodes.Teeth_Mesh002 as SkinnedMesh | undefined
 
@@ -42,7 +36,7 @@ export function ChrisAvatar() {
 
   const [activeLipSync, setActiveLipSync] = useState<LipSyncJSON | null>(null)
 
-  // Cleanup audio and state when component unmounts
+  /* Cleanup audio and state when component unmounts */
   useEffect(() => {
     return () => {
       const audio = responseAudioRef.current
@@ -61,7 +55,11 @@ export function ChrisAvatar() {
     }
   }, [])
 
-  // Handle response audio and lip sync data
+  /**
+   * Response handling hook.
+   * Calls the ask api endpoint and handles the response.
+   * Loads the audio and lip sync data with audio fallback.
+   */
   useEffect(() => {
     if (response?.status !== 'success') return
     if (!response.audio_url || !response.lip_sync_data) return
@@ -188,11 +186,15 @@ export function ChrisAvatar() {
     }
   }, [response])
 
+  /**
+   * Lip sync animation hook.
+   * Updates the avatar's lip sync based on the current audio time.
+   */
   useFrame(() => {
     if (!headMesh?.morphTargetInfluences || !headMesh?.morphTargetDictionary) return
     if (!teethMesh?.morphTargetInfluences || !teethMesh?.morphTargetDictionary) return
 
-    Object.values(visemeTargets).forEach((value) => {
+    Object.values(AvatarVisemeTargets).forEach((value) => {
       const headIndex = headMesh.morphTargetDictionary![value]
       const teethIndex = teethMesh.morphTargetDictionary![value]
       if (headIndex !== undefined) headMesh.morphTargetInfluences![headIndex] = 0
@@ -203,7 +205,7 @@ export function ChrisAvatar() {
     if (!activeAudio || !activeLipSync) return
     const currentAudioTime = activeAudio.currentTime
     for (const mouthCue of activeLipSync.mouthCues) {
-      const visemeTarget = visemeTargets[mouthCue.value]!
+      const visemeTarget = AvatarVisemeTargets[mouthCue.value]!
       const headIndex = headMesh.morphTargetDictionary![visemeTarget]
       const teethIndex = teethMesh.morphTargetDictionary![visemeTarget]
       if (currentAudioTime >= mouthCue.start && currentAudioTime < mouthCue.end) {
@@ -214,15 +216,27 @@ export function ChrisAvatar() {
     }
   })
 
+  /**
+   * Avatar animation hook.
+   * Initializes the avatar's animation state - SittingIdle and avaturn_animation (default breathing animation).
+   */
   useEffect(() => {
 
     mixer.stopAllAction()
 
-    actions[ActionNames[4]]?.play()
-    actions[ActionNames[0]]?.play()
+    const idleActionName = AvatarActionNames[4]
+    const breathingActionName = AvatarActionNames[0]
+
+    if (idleActionName) actions[idleActionName]?.play()
+    if (breathingActionName) actions[breathingActionName]?.play()
 
   }, [actions, mixer])
 
+  /**
+   * Avatar look at hook.
+   * Makes the avatar look at the camera.
+   * Needs further testing.
+   */
   useFrame((state) => {
     headMesh?.lookAt(state.camera.position)
   })

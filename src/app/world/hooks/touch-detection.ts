@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react"
 
+/**
+ * Touch device detection hook.
+ * Detects if the device is a touch device.
+ * Used to determine overlay visibility.
+ */
 export const useTouchDetection = () => {
     const [isTouchDevice, setIsTouchDevice] = useState(false);
 
@@ -8,7 +13,6 @@ export const useTouchDetection = () => {
             const mediaQuery = window.matchMedia("(pointer: coarse)");
             setIsTouchDevice(mediaQuery.matches);
 
-            // Listen for changes in input device type (e.g., connecting/disconnecting a mouse)
             const handleChange = (e: MediaQueryListEvent) => setIsTouchDevice(e.matches);
             if (typeof mediaQuery.addEventListener === 'function') {
                 mediaQuery.addEventListener("change", handleChange);

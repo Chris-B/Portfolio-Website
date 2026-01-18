@@ -3,9 +3,16 @@
 import { useState } from "react";
 import { Music } from 'lucide-react'
 import { Progress } from "@/components/ui/progress"
-import { useCanvas } from "@/context/canvas-context";
+import { useCanvas } from "@/app/world/hooks/canvas-context";
 import { Button } from "@/components/ui/button"
 
+/**
+ * The spotify now playing card component.
+ * Displays my currently playing song on spotify.
+ * Currently disabled.
+ * 
+ * @returns The spotify now playing card component.
+ */
 export default function NowPlayingCard() {
   const { isCanvasLoaded } = useCanvas()
   const song = null//api.spotify.getListening.useQuery(undefined, { refetchInterval: 2000 }).data

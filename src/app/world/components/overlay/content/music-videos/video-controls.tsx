@@ -8,6 +8,16 @@ import { useMusicVideoStore, getMusicVideoStoreInstance } from '@/app/world/stor
 import { useShallow } from 'zustand/shallow'
 import { useOverlayStore } from '@/app/world/stores/overlay-store'
 
+/**
+ * Video controls component for music videos.
+ * Features:
+ * - Play/Pause
+ * - Timeline
+ * - Depth Scale
+ * - Volume
+ * 
+ * @returns The video controls component.
+ */
 export default function VideoControls() {
   const [musicVideoSelection, setMusicVideoSelection] = useOverlayStore(useShallow((state) => [state.musicVideoSelection, state.setMusicVideoSelection] as const))
 
@@ -59,18 +69,17 @@ export default function VideoControls() {
 
   const getState = (id: string) => stateMap[id as keyof typeof stateMap]
 
-  // Show loading state if videos aren't ready yet
   if (!readyForControlMiddle || !readyForControlLeft || !readyForControlRight) return null
 
   return (
-    <div className="fixed bottom-[7%] left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md text-white p-4 border border-cyan-500/30 rounded-2xl z-50 w-[90%] max-w-xs">
+    <div className="fixed bottom-[7%] left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-md text-foreground p-4 border border-primary/30 rounded-2xl z-50 w-[90%] max-w-xs">
       <div className="flex justify-center gap-2 mb-4">
         {["Left", "Middle", "Right"].map((videoId) => (
           <button
             key={videoId}
             onClick={() => setMusicVideoSelection(videoId)}
             className={`px-4 py-1.5 rounded-full text-xs transition-all ${
-              musicVideoSelection === videoId ? "bg-cyan-500 text-black font-bold" : "bg-white/10 text-white/70 hover:bg-white/20 font-medium"
+              musicVideoSelection === videoId ? "bg-primary text-background font-bold" : "bg-foreground/10 text-foreground/70 hover:bg-foreground/20 font-medium"
             }`}
           >
             {videoId}
@@ -84,7 +93,7 @@ export default function VideoControls() {
           <Button
             size="icon"
             onClick={() => togglePlay(musicVideoSelection)}
-            className="h-12 w-12 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black"
+            className="h-12 w-12 rounded-full bg-primary hover:bg-primary/80 text-background"
             aria-label={getState(musicVideoSelection).isPlaying ? "Pause" : "Play"}
           >
             {getState(musicVideoSelection).isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
@@ -93,7 +102,7 @@ export default function VideoControls() {
 
         {/* Timeline Slider */}
         <div className="space-y-1">
-          <div className="flex justify-between text-[10px] text-white/50">
+          <div className="flex justify-between text-[10px] text-foreground/50">
             <span>Timeline</span>
             <span>{Math.round(getState(musicVideoSelection).currentTime)}s</span>
           </div>
@@ -109,7 +118,7 @@ export default function VideoControls() {
 
         {/* Depth Scale Slider */}
         <div className="space-y-1">
-          <div className="flex justify-between text-[10px] text-white/50">
+          <div className="flex justify-between text-[10px] text-foreground/50">
             <span>Depth Scale</span>
             <span>{getState(musicVideoSelection).depthEffect}</span>
           </div>
@@ -126,7 +135,7 @@ export default function VideoControls() {
 
         {/* Volume Slider */}
         <div className="space-y-1">
-          <div className="flex justify-between text-[10px] text-white/50">
+          <div className="flex justify-between text-[10px] text-foreground/50">
             <span>Volume</span>
             <span>{getState(musicVideoSelection).volume}</span>
           </div>

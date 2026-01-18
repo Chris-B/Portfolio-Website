@@ -1,6 +1,14 @@
 import { Text, RoundedBox, Center } from '@react-three/drei'
 
-// Classic Brass Plaque
+/**
+ * DoorSign component for displaying a door sign.
+ * 
+ * @param text: string
+ * @param position: [number, number, number]
+ * @param scale: [number, number, number]
+ * @param rotation: [number, number, number]
+ * @returns DoorSign component
+ */
 export default function DoorSign({ text = "OFFICE", position, scale, rotation }: { text: string, position: [number, number, number], scale: [number, number, number], rotation: [number, number, number] }) {
 
     const width = 2.4

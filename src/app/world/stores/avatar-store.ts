@@ -2,6 +2,14 @@ import { create } from 'zustand'
 import { AskResponse } from '@/app/world/schemas/ask-schemas'
 import { ChatMessage } from '@/app/world/types/world-types'
 
+/**
+ * Avatar store state.
+ * 
+ * @property {boolean} isSpeaking - Whether the avatar is speaking.
+ * @property {AskResponse | null} response - The current response from the avatar.
+ * @property {HTMLAudioElement | null} audio - The audio for the current response.
+ * @property {ChatMessage[]} messages - The chat messages history.
+ */
 export type AvatarState = {
   isSpeaking: boolean
   response: AskResponse | null
@@ -9,6 +17,14 @@ export type AvatarState = {
   messages: ChatMessage[]
 }
 
+/**
+ * Avatar store actions.
+ * 
+ * @property {function} toggleSpeech - Toggles the speech state.
+ * @property {function} setResponse - Sets the response.
+ * @property {function} ensureAudio - Ensures the audio element is created.
+ * @property {function} addMessage - Adds a message to the chat history.
+ */
 export type AvatarActions = {
   toggleSpeech: (isSpeaking: boolean) => void
   setResponse: (response: AskResponse | null) => void
@@ -16,8 +32,17 @@ export type AvatarActions = {
   addMessage: (message: ChatMessage) => void
 }
 
+/**
+ * Avatar store type.
+ */
 export type AvatarStore = AvatarState & AvatarActions
 
+/**
+ * Avatar store hook.
+ * Sets default values and provides actions for the avatar.
+ * 
+ * @returns {AvatarStore} The avatar store.
+ */
 export const useAvatarStore = create<AvatarStore>((set, get) => ({
   isSpeaking: false,
   response: null,

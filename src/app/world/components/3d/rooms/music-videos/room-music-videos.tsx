@@ -4,25 +4,28 @@ import { useEffect, useState, useMemo } from 'react'
 import { useCompressedGLTF } from '@/app/world/hooks/use-compressed-gltf'
 import { Mesh } from 'three'
 import { RigidBody, MeshCollider, useRapier } from '@react-three/rapier'
-import { DoorProps } from '@/app/world/types/world-types'
-import { Vector3 } from 'three'
-import { MapProps } from '@/app/world/types/world-types'
+import { SceneProps } from '@/app/world/types/world-types'
 import { DoorSensor } from '@/app/world/components/3d/additions/door-sensor'
 import { VideoScreenMesh3D } from '@/app/world/components/3d/additions/media-screens'
 import DoorSign from '@/app/world/components/3d/additions/door-sign'
 import { pauseAllMusicVideos, cleanupAllMusicVideos } from '@/app/world/stores/music-videos-store'
+import { MusicVideoRoomDoor } from '@/app/world/tables/world-tables'
 
-const door: DoorProps = {id: 'RoomA', name: 'Exit', position: new Vector3(0, 1.2, -6), rotation: 0, doorSignPosition: new Vector3(0, 2.632, -5.885)}
-
-export function RoomMusicVideos({ onReady, onDoorEnter }: MapProps) {
+/**
+ * Music Video Room Model/Component
+ * 
+ * @param {SceneProps} onReady - Callback function to be called when the room is ready
+ * @param {SceneProps} onDoorEnter - Callback function to be called when the door is entered
+ * 
+ * @returns {JSX.Element} - The model primitive and 3D video screens <VideoScreenMesh3D />
+ */
+export function RoomMusicVideos({ onReady, onDoorEnter }: SceneProps) {
     const { scene } = useCompressedGLTF('/world/rooms/room-b/RoomB-Compressed.glb')
     const { world } = useRapier()
     const [collidersReady, setCollidersReady] = useState(false)
 
-    // Clone scene to prevent reuse issues on mobile Safari
     const clonedScene = useMemo(() => {
         const clone = scene.clone(true)
-        // Clone materials to prevent shared material issues with Environment component
         clone.traverse((child) => {
             if (child instanceof Mesh && child.material) {
                 const mats = Array.isArray(child.material) ? child.material : [child.material]
@@ -37,19 +40,17 @@ export function RoomMusicVideos({ onReady, onDoorEnter }: MapProps) {
         return clone
     }, [scene])
 
-    // Cleanup video resources when leaving the room
     useEffect(() => {
         return () => {
             cleanupAllMusicVideos()
         }
     }, [])
 
-    // Check when colliders are ready
     useEffect(() => {
         if (collidersReady) return
 
         let attempts = 0
-        const maxAttempts = 300 // ~5 seconds at 60fps
+        const maxAttempts = 300
 
         const checkColliders = () => {
             attempts++
@@ -60,7 +61,6 @@ export function RoomMusicVideos({ onReady, onDoorEnter }: MapProps) {
             } else if (attempts < maxAttempts) {
                 requestAnimationFrame(checkColliders)
             } else {
-                // Timeout - proceed anyway to prevent black screen
                 console.warn('Collider check timed out, proceeding anyway')
                 setCollidersReady(true)
                 onReady?.()
@@ -78,20 +78,20 @@ export function RoomMusicVideos({ onReady, onDoorEnter }: MapProps) {
                 </MeshCollider>
             </RigidBody>
 
-            {door && <DoorSensor
-                key={door.id}
-                name={door.id}
-                position={door.position.toArray()}
+            {MusicVideoRoomDoor && <DoorSensor
+                key={MusicVideoRoomDoor.id}
+                name={MusicVideoRoomDoor.id}
+                position={MusicVideoRoomDoor.position.toArray()}
                 onEnter={() => {
                     pauseAllMusicVideos()
-                    onDoorEnter?.(door.id, [10, 1.5, 0])
+                    onDoorEnter?.(MusicVideoRoomDoor.id, [10, 1.5, 0])
                 }}
             />}
 
-            {door && <DoorSign
+            {MusicVideoRoomDoor && <DoorSign
                 text="Exit"
-                position={[door.doorSignPosition.x, door.doorSignPosition.y, door.doorSignPosition.z]}
-                rotation={[0, door.rotation, 0]}
+                position={[MusicVideoRoomDoor.doorSignPosition.x, MusicVideoRoomDoor.doorSignPosition.y, MusicVideoRoomDoor.doorSignPosition.z]}
+                rotation={[0, MusicVideoRoomDoor.rotation, 0]}
                 scale={[0.44, 0.44, 0.44]}
             />}
 

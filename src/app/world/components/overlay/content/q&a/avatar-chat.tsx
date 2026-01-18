@@ -8,7 +8,19 @@ import { useAvatarStore } from "@/app/world/stores/avatar-store"
 import { useShallow } from 'zustand/shallow'
 import { useAskMutation } from '@/app/world/api/use-ask'
 import type { AskResponse } from '@/app/world/schemas/ask-schemas'
+import { SuggestedQuestions } from '@/app/world/tables/world-tables'
 
+/**
+ * The avatar chat component for the Q&A room.
+ * Calls the Ask API query endpoint to get responses from the avatar.
+ * Features:
+ * - Send messages to the avatar
+ * - Receive responses from the avatar
+ * - Suggested questions
+ * - Stored state in zustand
+ * 
+ * @returns The avatar chat component.
+ */
 export default function AvatarChat() {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
@@ -20,14 +32,6 @@ export default function AvatarChat() {
   const [messages, setResponse, ensureAudio, addMessage] = useAvatarStore(useShallow((state) => [state.messages, state.setResponse, state.ensureAudio, state.addMessage]))
 
   const askMutation = useAskMutation()
-
-  const suggestedQuestions = useMemo(
-    () => [
-      "What kind of software do you build?",
-      "What are your thoughts on golfing?",
-    ],
-    []
-  )
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -95,10 +99,10 @@ export default function AvatarChat() {
 
   return (
     <div className="fixed left-1/2 bottom-[7%] z-50 w-[92vw] -translate-x-1/2 transform md:w-[520px]">
-      <div className="rounded-lg border border-cyan-500/30 bg-black/80 p-3 text-white backdrop-blur-md">
-        <div className="max-h-56 space-y-2 overflow-y-auto pr-1 border-b border-white/30">
+      <div className="rounded-lg border border-primary/30 bg-background/80 p-3 text-foreground backdrop-blur-md">
+        <div className="max-h-56 space-y-2 overflow-y-auto pr-1 border-b border-foreground/30">
           {messages.length === 0 ? (
-            <div className="text-sm text-white/70">
+            <div className="text-sm text-foreground/70">
               Ask me anything about my experience, projects, or what I’m building.
             </div>
           ) : (
@@ -107,8 +111,8 @@ export default function AvatarChat() {
                 key={`${m.role}-${idx}`}
                 className={
                   m.role === 'user'
-                    ? "ml-auto w-fit max-w-[85%] rounded-2xl bg-cyan-600/20 px-3 py-2 text-sm border border-white/40"
-                    : "mr-auto w-fit max-w-[85%] rounded-2xl bg-purple-600/20 px-3 py-2 text-sm border border-white/40"
+                    ? "ml-auto w-fit max-w-[85%] rounded-2xl bg-primary/20 px-3 py-2 text-sm border border-foreground/40"
+                    : "mr-auto w-fit max-w-[85%] rounded-2xl bg-secondary/20 px-3 py-2 text-sm border border-foreground/40"
                 }
               >
                 {m.content}
@@ -116,7 +120,7 @@ export default function AvatarChat() {
             ))
           )}
           {isLoading ? (
-            <div className="mr-auto flex w-fit max-w-[85%] items-center gap-2 rounded-2xl bg-purple-600/20 px-3 py-2 text-sm text-white/80 border border-white/40">
+            <div className="mr-auto flex w-fit max-w-[85%] items-center gap-2 rounded-2xl bg-secondary/20 px-3 py-2 text-sm text-foreground/80 border border-foreground/40">
               <Loader2 className="h-4 w-4 animate-spin" />
               Thinking…
             </div>
@@ -125,12 +129,12 @@ export default function AvatarChat() {
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2">
-          {suggestedQuestions.map((q) => (
+          {SuggestedQuestions.map((q) => (
             <Button
               key={q}
               type="button"
               variant="secondary"
-              className="h-7 rounded-full bg-white/5 px-3 text-xs text-white/80 hover:bg-white/10 border border-white/40"
+              className="h-7 rounded-full bg-foreground/5 px-3 text-xs text-foreground/80 hover:bg-foreground/10 border border-foreground/40"
               onClick={() => {
                 void sendMessage(q)
               }}
@@ -153,12 +157,12 @@ export default function AvatarChat() {
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Ask me anything…"
             disabled={isLoading}
-            className="h-10 flex-1 border-cyan-500/30 focus-visible:shadow-[0_0_10px_#22d3ee] focus-visible:border focus-visible:border-cyan-500/60 focus-visible:ring-0 bg-black/30 text-white placeholder:text-white/50"
+            className="h-10 flex-1 border-primary/30 focus-visible:shadow-[0_0_10px_#22d3ee] focus-visible:border focus-visible:border-primary/60 focus-visible:ring-0 bg-background/30 text-foreground placeholder:text-foreground/50"
           />
           <Button
             type="submit"
             disabled={isLoading || !inputText.trim()}
-            className="h-10 bg-cyan-500 text-white hover:bg-cyan-400"
+            className="h-10 bg-primary text-foreground hover:bg-primary/80"
           >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>

@@ -8,8 +8,16 @@ import MusicVideosOverlay from "@/app/world/components/overlay/content/music-vid
 import { useTouchDetection } from "@/app/world/hooks/touch-detection"
 import { useOverlayStore } from "@/app/world/stores/overlay-store"
 import { useShallow } from "zustand/shallow"
-import { useCanvas } from "@/context/canvas-context"
+import { useCanvas } from "@/app/world/hooks/canvas-context"
 
+/**
+ * The wrapper component for all overlays.
+ * Updates the overlay based on the current scene.
+ * Utilizes touch detection hook to determine if movement controls should be displayed.
+ * 
+ * @param {OverlayProps} currentScene The current scene.
+ * @returns The overlay component.
+ */
 export default function Overlay({ currentScene }: OverlayProps) {
 
     const isTouchDevice = useTouchDetection()

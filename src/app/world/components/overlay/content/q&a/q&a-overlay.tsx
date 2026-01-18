@@ -5,13 +5,22 @@ import { Button } from "@/components/ui/button"
 import AvatarChat from "@/app/world/components/overlay/content/q&a/avatar-chat"
 import { useOverlayStore } from "@/app/world/stores/overlay-store"
 import { useShallow } from "zustand/shallow"
+import { RoomOverlayProps } from "@/app/world/types/world-types"
 
-export default function QAOverlay({isTouchDevice}: {isTouchDevice: boolean}) {
+/**
+ * The Q&A room overlay component.
+ * Mobile friendly chat box and display button.
+ * 
+ * @param {RoomOverlayProps} props - The props for the Q&A room overlay component.
+ * @returns The Q&A room overlay component.
+ */
+export default function QAOverlay({isTouchDevice}: RoomOverlayProps) {
 
     const [isChatOpen, toggleChatBox, toggleControls] = useOverlayStore(useShallow((state) => [state.isAvatarChatOpen, state.toggleAvatarChat, state.toggleControls]))
 
     const chatContainerRef = useRef<HTMLDivElement | null>(null)
 
+    /* Setup mobile touch behavior */
     useEffect(() => {
         if (!isTouchDevice) return
         if (!isChatOpen) return
@@ -54,7 +63,7 @@ export default function QAOverlay({isTouchDevice}: {isTouchDevice: boolean}) {
                     <Button
                         variant="outline"
                         size="lg"
-                        className="w-20 h-20 rounded-full bg-black/75 border-cyan-500/30 border backdrop-blur-sm pointer-events-auto touch-none flex items-center justify-center text-white text-wrap font-bold transition-all duration-300 ease-in-out hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:shadow-[0_0_20px_rgba(139,92,246,0.7)]"
+                        className="w-20 h-20 rounded-full bg-background/75 border-primary/30 border backdrop-blur-sm pointer-events-auto touch-none flex items-center justify-center text-foreground text-wrap font-bold transition-all duration-300 ease-in-out hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:shadow-[0_0_20px_rgba(139,92,246,0.7)]"
                         onClick={() => handleChatButton()}
                     >
                         Chat<br />With Me

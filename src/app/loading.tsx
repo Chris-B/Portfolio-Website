@@ -1,69 +1,67 @@
 "use client";
 
-import { Loader2 } from "lucide-react"
-import { FC } from "react"
-
-const GridLine: FC<{ className: string }> = ({ className }) => (
-  <div className={className}></div>
-)
-
+/**
+ * Loading Component. Used during suspense fallback.
+ * 
+ * @returns Loading Component
+ */
 export default function Loading() {
-  const verticalLines = Array.from({ length: 6 }, (_, i) => (
-    <GridLine key={`v-${i}`} className="h-full w-px bg-cyan-500/20" />
-  ))
-
-  const horizontalLines = Array.from({ length: 6 }, (_, i) => (
-    <GridLine key={`h-${i}`} className="w-full h-px bg-cyan-500/20" />
-  ))
-
   return (
-    <main className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Cyberpunk-inspired background elements */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
-      </div>
+    <main className="min-h-screen bg-background text-foreground overflow-hidden relative">
+      {/* Animated background grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-size-[64px_64px]" />
 
-      {/* Grid lines */}
-      <div className="absolute inset-0 z-10 grid grid-cols-6 gap-2 opacity-20">
-        {verticalLines}
-        {horizontalLines}
-      </div>
+      {/* Gradient orbs */}
+      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse" />
 
-      {/* Loading content */}
-      <div className="z-20 text-center relative">
-        <h2 className="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500 animate-pulse">
-          Initializing...
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6">
+        {/* Loading spinner */}
+        <div className="relative mb-8">
+          {/* Outer ring */}
+          <div className="w-24 h-24 rounded-full border-2 border-foreground/10" />
+          
+          {/* Spinning gradient ring */}
+          <div className="absolute inset-0 w-24 h-24 rounded-full border-2 border-transparent border-t-primary border-r-secondary animate-spin" />
+          
+          {/* Inner pulse */}
+          <div className="absolute inset-4 rounded-full bg-linear-to-br from-primary/20 to-secondary/20 animate-pulse" />
+        </div>
+
+        {/* Loading text */}
+        <h2 className="text-xl font-semibold text-foreground mb-2">
+          Initializing Experience
         </h2>
-        <Loader2 className="w-16 h-16 animate-spin text-cyan-500 mx-auto" />
-        <p className="mt-4 text-lg text-gray-300">Greatness Awaits...</p>
+
+        <p className="text-foreground/50 text-sm font-mono tracking-wider mb-8">
+          Loading assets...
+        </p>
+
+        {/* Progress bar */}
+        <div className="w-64 h-1 bg-foreground/10 rounded-full overflow-hidden">
+          <div className="h-full w-full bg-linear-to-r from-primary to-secondary rounded-full animate-loading-bar" />
+        </div>
+
+        {/* Status text */}
+        <p className="mt-8 text-foreground/30 text-xs font-mono">
+          RENDERING 3D ENVIRONMENT
+        </p>
       </div>
 
-      {/* Keyframe animations */}
       <style jsx>{`
-        @keyframes blob {
+        @keyframes loading-bar {
           0% {
-            transform: translate(0px, 0px) scale(1);
+            transform: translateX(-100%);
           }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
+          50% {
+            transform: translateX(0%);
           }
           100% {
-            transform: translate(0px, 0px) scale(1);
+            transform: translateX(100%);
           }
         }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
+        .animate-loading-bar {
+          animation: loading-bar 2s ease-in-out infinite;
         }
       `}</style>
     </main>

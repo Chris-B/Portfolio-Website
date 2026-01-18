@@ -1,6 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
 import { AskRequestSchema, AskResponseSchema } from "@/app/world/schemas/ask-schemas";
 
+/**
+ * TanStack React Query mutation hook for avatar Q&A ask api endpoint.
+ * 
+ * @returns AskResponseSchema 
+ * {
+ *  status: z.enum(['success', 'error']),
+ *  text: z.string(),
+ *  audio_url: z.string().optional(),
+ *  lip_sync_data: LipSyncDataSchema.optional()
+ * }
+ */
 export function useAskMutation() {
   return useMutation({
     mutationKey: ["ask"],

@@ -6,9 +6,13 @@ import { KTX2Loader } from 'three-stdlib'
 import { useRef } from 'react'
 import { WebGLRenderer } from 'three'
 
-// Singleton KTX2Loader instance
+/* Singleton KTX2Loader instance */
 let ktx2Loader: KTX2Loader | null = null
 
+/**
+ * Returns a KTX2Loader instance.
+ * If the instance doesn't exist, it creates one and configures it.
+ */
 function getKTX2Loader(gl: WebGLRenderer): KTX2Loader {
     if (!ktx2Loader) {
         ktx2Loader = new KTX2Loader()
@@ -19,31 +23,22 @@ function getKTX2Loader(gl: WebGLRenderer): KTX2Loader {
 }
 
 /**
- * Custom hook for loading GLB files with KTX2 texture support.
- * Use this instead of useGLTF when your GLB has KTX2 compressed textures.
+ * Hook for loading GLB files with KTX2 texture support.
+ * 
+ * @param {string} url - The URL of the GLB file to load.
+ * @returns The loaded GLTF result.
  */
 export function useCompressedGLTF(url: string) {
     const { gl } = useThree()
     const loaderRef = useRef<KTX2Loader | null>(null)
     
-    // Get or create the KTX2 loader
     if (!loaderRef.current) {
         loaderRef.current = getKTX2Loader(gl)
     }
     
-    // Load GLTF with KTX2 support via extendLoader callback
     const gltf = useGLTF(url, true, true, (loader) => {
         loader.setKTX2Loader(loaderRef.current!)
     })
     
     return gltf
-}
-
-// Preload function for compressed GLTFs
-export function preloadCompressedGLTF(url: string) {
-    // Note: preload can't use KTX2 loader since we don't have gl context
-    // The actual load with KTX2 will happen when the component mounts
-    useGLTF.preload(url, true, true, (loader) => {
-        
-    })
 }

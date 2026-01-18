@@ -1,6 +1,10 @@
 import { Audio } from 'three'
 import { createStore, useStore, StoreApi } from 'zustand';
 
+/**
+ * Music video state interface.
+ * Types the variables and actions for the music video store.
+ */
 interface MusicVideoState {
   isPlaying: boolean
   audioLoaded: boolean
@@ -26,8 +30,21 @@ interface MusicVideoState {
   setReadyForControl: (readyForControl: boolean) => void
 }
 
+/**
+ * Music video store registry.
+ * Contains all current music video stores.
+ * 
+ * @type {Record<string, StoreApi<MusicVideoState>>}
+ */
 const musicVideoRegistry: Record<string, StoreApi<MusicVideoState>> = {}
 
+/**
+ * Gets a music video store instance based on the ID.
+ * If the store doesn't exist, it creates a new one and sets default values.
+ * 
+ * @param id - The ID of the music video store.
+ * @returns The music video store instance.
+ */
 export const getMusicVideoStoreInstance = (id: string): StoreApi<MusicVideoState> => {
   if (!musicVideoRegistry[id]) {
     musicVideoRegistry[id] = createStore<MusicVideoState>((set) => ({
@@ -58,35 +75,44 @@ export const getMusicVideoStoreInstance = (id: string): StoreApi<MusicVideoState
   return musicVideoRegistry[id]
 }
 
+/**
+ * Hook for accessing a music video store based on the ID.
+ * 
+ * @param id - The ID of the music video store.
+ * @param selector - The selector used to get the values from the store.
+ * @returns The selected values from the store.
+ */
 export function useMusicVideoStore<T>(id: string, selector: (state: MusicVideoState) => T): T {
   const store = getMusicVideoStoreInstance(id)
   return useStore(store, selector)
 }
 
+/* Helper function to pause all music videos */
 export function pauseAllMusicVideos() {
     Object.values(musicVideoRegistry).forEach(store => {
         store.setState({ isPlaying: false })
     })
 }
 
+/* Helper function to cleanup all video and audio elements and reset the store */
 export function cleanupAllMusicVideos() {
     Object.entries(musicVideoRegistry).forEach(([id, store]) => {
         const state = store.getState()
         
-        // Stop and cleanup audio
+        /* Stop and cleanup audio */
         if (state.audio) {
             if (state.audio.isPlaying) state.audio.stop()
             state.audio.disconnect()
         }
         
-        // Cleanup video element
+        /* Cleanup video element */
         if (state.videoElement) {
             state.videoElement.pause()
             state.videoElement.src = ''
             state.videoElement.load()
         }
         
-        // Reset store state
+        /* Reset store state */
         store.setState({
             isPlaying: false,
             audioLoaded: false,
