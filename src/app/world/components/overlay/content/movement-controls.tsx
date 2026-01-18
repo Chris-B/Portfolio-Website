@@ -1,0 +1,107 @@
+'use client'
+
+import { useCallback, useRef, useState, useEffect } from 'react'
+import { useJoystickControls } from 'ecctrl'
+import { Button } from "@/components/ui/button"
+
+export default function MovementControls() {
+  const joystickRef = useRef<HTMLDivElement>(null)
+  const jumpRef = useRef<HTMLButtonElement>(null)
+  const [joystickPos, setJoystickPos] = useState({ x: 0, y: 0 })
+  const isDraggingRef = useRef(false)
+
+  const setJoystick = useJoystickControls((state) => state.setJoystick)
+  const pressButton1 = useJoystickControls((state) => state.pressButton1)
+  const releaseAllButtons = useJoystickControls((state) => state.releaseAllButtons)
+
+  useEffect(() => {
+
+    const joystick = joystickRef.current
+    const jump = jumpRef.current
+
+    if (!joystick) return
+
+    const onTouchStart = (e: TouchEvent) => {
+      e.preventDefault()
+      const touch = e.touches[0]
+      if (touch) {
+        isDraggingRef.current = true
+      }
+    }
+
+    const onTouchMove = (e: TouchEvent) => {
+      e.preventDefault()
+      if (!isDraggingRef.current) return
+      const touch = e.touches[0]
+      if (touch && joystick) {
+        const rect = joystick.getBoundingClientRect()
+        const centerX = rect.left + rect.width / 2
+        const centerY = rect.top + rect.height / 2
+        let deltaX = touch.clientX - centerX
+        let deltaY = touch.clientY - centerY
+        const maxRadius = 60
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+        if (distance > maxRadius) {
+          deltaX = (deltaX / distance) * maxRadius
+          deltaY = (deltaY / distance) * maxRadius
+        }
+        setJoystickPos({ x: deltaX, y: deltaY })
+        const normalizedDistance = Math.min(distance / maxRadius, 1)
+        const angle = Math.atan2(deltaX, deltaY) - Math.PI / 2
+        setJoystick(normalizedDistance, angle, true)
+      }
+    }
+
+    const onTouchEnd = () => {
+      isDraggingRef.current = false
+      setJoystickPos({ x: 0, y: 0 })
+      setJoystick(0, 0, false)
+    }
+
+    const onJumpTouch = (e: TouchEvent) => {
+      e.preventDefault()
+      pressButton1()
+      setTimeout(() => releaseAllButtons(), 100)
+    }
+
+    joystick.addEventListener('touchstart', onTouchStart, { passive: false })
+    joystick.addEventListener('touchmove', onTouchMove, { passive: false })
+    joystick.addEventListener('touchend', onTouchEnd)
+    jump?.addEventListener('touchstart', onJumpTouch, { passive: false })
+    
+    return () => {
+      joystick.removeEventListener('touchstart', onTouchStart)
+      joystick.removeEventListener('touchmove', onTouchMove)
+      joystick.removeEventListener('touchend', onTouchEnd)
+      jump?.removeEventListener('touchstart', onJumpTouch)
+    }
+  }, [setJoystick, pressButton1, releaseAllButtons])
+
+  return (
+    <div className="fixed bottom-[5%] left-[5%] right-[5%] z-50 pointer-events-none p-4 flex justify-between items-end">
+      {/* Joystick */}
+      <div
+        ref={joystickRef}
+        className="relative w-32 h-32 rounded-full bg-black/75 border-cyan-500/30 border backdrop-blur-sm pointer-events-auto touch-none"
+      >
+        {/* Joystick knob */}
+        <div
+          className="absolute w-16 h-16 rounded-full bg-white/60 backdrop-blur-md"
+          style={{
+            left: '50%',
+            top: '50%',
+            transform: `translate(calc(-50% + ${joystickPos.x}px), calc(-50% + ${joystickPos.y}px))`
+          }}
+        />
+      </div>
+
+      {/* Jump button */}
+      <Button
+        ref={jumpRef}
+        className="w-20 h-20 rounded-full bg-black/75 border-cyan-500/30 border backdrop-blur-sm pointer-events-auto touch-none flex items-center justify-center text-white font-bold"
+      >
+        JUMP
+      </Button>
+    </div>
+  )
+}

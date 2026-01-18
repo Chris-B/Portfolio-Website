@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, FC, ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 
 type CanvasContextType = {
@@ -10,7 +10,7 @@ type CanvasContextType = {
 
 const CanvasContext = createContext<CanvasContextType | undefined>(undefined)
 
-export const CanvasProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CanvasProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
   const pathname = usePathname()
 

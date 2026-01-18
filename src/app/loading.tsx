@@ -1,8 +1,9 @@
-'use client'
+"use client";
 
 import { Loader2 } from "lucide-react"
+import { FC } from "react"
 
-const GridLine: React.FC<{ className: string }> = ({ className }) => (
+const GridLine: FC<{ className: string }> = ({ className }) => (
   <div className={className}></div>
 )
 
@@ -36,7 +37,7 @@ export default function Loading() {
           Initializing...
         </h2>
         <Loader2 className="w-16 h-16 animate-spin text-cyan-500 mx-auto" />
-        <p className="mt-4 text-lg text-gray-300">Accessing the cybernet...</p>
+        <p className="mt-4 text-lg text-gray-300">Greatness Awaits...</p>
       </div>
 
       {/* Keyframe animations */}

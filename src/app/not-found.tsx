@@ -1,9 +1,10 @@
-'use client'
+"use client";
 
 import Link from "next/link"
 import { AlertTriangle } from "lucide-react"
+import { FC } from "react"
 
-const GridLine: React.FC<{ className: string }> = ({ className }) => (
+const GridLine: FC<{ className: string }> = ({ className }) => (
   <div className={className}></div>
 )
 
@@ -45,8 +46,7 @@ export default function NotFound() {
             {'RETURN'.split('').map((letter, index) => (
               <span
                 key={index}
-                className="inline-block text-3xl font-bold transition-all duration-300 ease-in-out
-                           hover:text-cyan-400 group-hover:animate-float"
+                className="inline-block text-3xl font-bold transition-all duration-300 ease-in-out hover:text-cyan-400 group-hover:animate-float"
                 style={{
                   textShadow: `
                     1px 1px 0 #8B5CF6,
@@ -57,7 +57,7 @@ export default function NotFound() {
                     6px 6px 10px rgba(0, 0, 0, 0.5)
                   `,
                   animation: `float 2s ease-in-out infinite ${index * 0.1}s`,
-                  color: '#E5E7EB', // Light gray color
+                  color: '#E5E7EB',
                 }}
               >
                 {letter}

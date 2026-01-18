@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { AskRequestSchema } from "../../dashboard/schemas/ask-schemas";
+import { AskRequestSchema } from "@/app/world/schemas/ask-schemas";
 
 export async function POST(req: Request) {
   try {

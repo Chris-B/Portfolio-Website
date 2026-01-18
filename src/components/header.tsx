@@ -7,10 +7,7 @@ import { Menu, X } from "lucide-react"
 
 const navItems = [
   { name: "Home", path: "/" },
-  { name: "Dashboard", path: "/dashboard" },
-  { name: "3D Music Video", path: "/video" },
-  { name: "Projects", path: "/projects" },
-  { name: "Experience", path: "/experience" },
+  { name: "World", path: "/world" },
 ]
 
 export default function Header() {
@@ -20,10 +17,10 @@ export default function Header() {
   if (pathname === '/') return null
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xs">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/75 border-cyan-500/30 border backdrop-blur-xs">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
-          <Link href="/" className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500">
+          <Link href="/" className="text-3xl font-bold text-transparent bg-clip-text bg-cyan-500 animate-pulse mr-2">
             Chris Barclay
           </Link>
           <div className="hidden md:flex space-x-4">
@@ -34,12 +31,12 @@ export default function Header() {
                 className={`
                   relative px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out
                   ${pathname === item.path
-                    ? "text-cyan-400 border border-cyan-400 shadow-[0_0_10px_#22d3ee] bg-cyan-400/10"
-                    : "text-purple-300 border border-purple-500/50 hover:border-purple-400 hover:text-purple-400 hover:shadow-[0_0_15px_#a855f7]"
+                    ? "text-cyan-500 border border-cyan-500 shadow-[0_0_10px_#22d3ee] bg-cyan-500/10"
+                    : "text-cyan-500 border border-cyan-500/50 hover:border-cyan-400 hover:text-cyan-400 hover:shadow-[0_0_15px_#22d3ee]"
                   }
                   rounded-md overflow-hidden
                   before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full
-                  before:bg-linear-to-r before:from-purple-500/20 before:to-cyan-400/20 before:opacity-0
+                  before:bg-cyan-500/10 before:opacity-0
                   hover:before:opacity-100 before:transition-opacity before:duration-300
                 `}
               >
@@ -58,7 +55,7 @@ export default function Header() {
       </div>
       {isOpen && (
         <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-black/30 backdrop-blur-md">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -66,8 +63,8 @@ export default function Header() {
                 className={`
                   block px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ease-in-out
                   ${pathname === item.path
-                    ? "text-cyan-400 bg-cyan-400/10 border border-cyan-400/50 shadow-[0_0_10px_#22d3ee]"
-                    : "text-purple-300 hover:bg-purple-400/10 hover:text-purple-400 hover:border hover:border-purple-400/50 hover:shadow-[0_0_15px_#a855f7]"
+                    ? "text-cyan-500 border border-cyan-500 shadow-[0_0_10px_#22d3ee] bg-cyan-500/10"
+                    : "text-cyan-500 border border-cyan-500/20 hover:border-cyan-400 hover:text-cyan-400 hover:shadow-[0_0_15px_#22d3ee]"
                   }
                 `}
                 onClick={() => setIsOpen(false)}

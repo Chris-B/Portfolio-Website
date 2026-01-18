@@ -1,7 +1,4 @@
-'use client'
-
-import React from 'react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "~/components/ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 
 interface Experience {
   id: number;
@@ -58,7 +55,7 @@ function ExperienceCard({ experience }: { experience: Experience }) {
   )
 }
 
-export default function ExperiencePage() {
+export default async function ExperiencePage() {
 
   return (
     <div className="min-h-screen bg-black text-white  pt-20 pb-20 px-5">

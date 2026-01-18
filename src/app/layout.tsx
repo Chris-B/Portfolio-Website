@@ -1,11 +1,11 @@
-import "~/styles/globals.css";
+import "@/styles/globals.css";
 
 import { type Metadata } from "next";
+import { type ReactNode } from "react";
 
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import Footer from "~/components/footer";
-import Header from "~/components/header";
-import QueryProvider from "~/providers/query-provider";
+import Footer from "@/components/footer";
+import Header from "@/components/header";
+import QueryProvider from "@/providers/query-provider";
 
 export const metadata: Metadata = {
   title: "Chris Barclay",
@@ -15,9 +15,9 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" className="h-full w-full" >
       <body className="h-full w-full bg-black" >
@@ -25,7 +25,6 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
-          <ReactQueryDevtools initialIsOpen={false} />
         </QueryProvider>
       </body>
     </html>

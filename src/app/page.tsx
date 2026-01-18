@@ -1,8 +1,9 @@
-'use client'
+"use client";
 
 import Link from "next/link"
+import { FC } from "react"
 
-const GridLine: React.FC<{ className: string }> = ({ className }) => (
+const GridLine: FC<{ className: string }> = ({ className }) => (
   <div className={className}></div>
 )
 
@@ -35,14 +36,13 @@ export default function Home() {
           <h1 className="text-6xl font-bold mb-8 text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500 animate-pulse">
             Chris Barclay
           </h1>
-          <Link href="/dashboard">
+          <Link href="/world">
             <button className="group">
               <span className="sr-only">Enter</span>
               {'ENTER'.split('').map((letter, index) => (
                 <span
                   key={index}
-                  className="inline-block text-5xl font-bold transition-all duration-300 ease-in-out
-                            hover:text-cyan-400 group-hover:animate-float"
+                  className="inline-block text-5xl font-bold transition-all duration-300 ease-in-out hover:text-cyan-400 group-hover:animate-float"
                   style={{
                     textShadow: `
                       1px 1px 0 #8B5CF6,

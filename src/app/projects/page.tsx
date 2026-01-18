@@ -1,9 +1,9 @@
-'use client'
+"use client"
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Github, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react'
-import { Button } from "~/components/ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "~/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 
 interface Project {
   id: number;
@@ -133,7 +133,7 @@ function ProjectCard({ project }: { project: Project }) {
   )
 }
 
-export default function Home() {
+export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-20 px-5">
