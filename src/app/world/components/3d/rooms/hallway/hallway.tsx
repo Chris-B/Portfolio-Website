@@ -21,7 +21,7 @@ const doors: DoorProps[] = [
 ]
 
 export function Hallway({ onReady, onDoorEnter }: MapProps) {
-  const { scene } = useCompressedGLTF('/world/Hallway-compressed.glb')
+  const { scene } = useCompressedGLTF('/world/Hallway-Compressed.glb')
   const { world } = useRapier()
 
   const [collidersReady, setCollidersReady] = useState(false)
