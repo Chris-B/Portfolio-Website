@@ -3,7 +3,7 @@ import { Mesh } from 'three'
 import { useCompressedGLTF } from '@/app/world/hooks/use-compressed-gltf'
 
 export default function CharacterModel() {
-  const { scene } = useCompressedGLTF('/world/Character-compressed.glb')
+  const { scene } = useCompressedGLTF('/world/Character-Compressed.glb')
   
   // Clone scene to prevent reuse issues on mobile Safari
   const clonedScene = useMemo(() => {
