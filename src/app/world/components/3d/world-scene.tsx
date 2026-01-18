@@ -1,34 +1,22 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { Environment, KeyboardControls } from "@react-three/drei";
+import { Environment, KeyboardControls, useCubeTexture } from "@react-three/drei";
 
 import { Hallway } from '@/app/world/components/3d/rooms/hallway/hallway'
 import { RoomQA } from '@/app/world/components/3d/rooms/q&a/room-q&a'
 import { RoomMusicVideos } from '@/app/world/components/3d/rooms/music-videos/room-music-videos'
 
 import { useCanvas } from '@/context/canvas-context'
+import { SceneType } from "@/app/world/types/world-types";
 
 import { Canvas, useThree } from '@react-three/fiber'
-import { Color, DirectionalLightHelper, DirectionalLight } from "three";
+import { Color, DirectionalLightHelper, DirectionalLight, SRGBColorSpace } from "three";
 
 import Ecctrl from "ecctrl";
 import Overlay from "@/app/world/components/overlay/overlay";
 import { Physics } from "@react-three/rapier";
 import CharacterModel from "@/app/world/components/3d/character/character-model";
-import { SceneType } from "@/app/world/types/world-types";
-
-const ROOM_SPAWN_POSITIONS: Record<SceneType, [number, number, number]> = {
-    'hallway': [0, 1, 0],
-    'room-Q&A': [0, 1, -3],
-    'room-music-videos': [0, 1, -3],
-    'roomC': [0, 1, -3],
-    'roomD': [0, 1, -3],
-    'roomE': [0, 1, -3],
-    'roomF': [0, 1, -3],
-    'roomG': [0, 1, -3],
-    'roomH': [0, 1, -3],
-}
 
 // Debug component to visualize directional light
 function TargetedDirectionalLight({ position, intensity, target = [0, 0, 0] }: { 
@@ -93,17 +81,19 @@ export default function WorldScene() {
 
     const [currentScene, setCurrentScene] = useState<SceneType>('hallway')
     const [physicsReady, setPhysicsReady] = useState(false)
+    const [currentSpawnPosition, setCurrentSpawnPosition] = useState<[number, number, number]>([0, 1, 0])
 
-    const handleSceneChange = useCallback((newScene: SceneType) => {
+    const handleSceneChange = useCallback((newScene: SceneType, newSpawnPosition: [number, number, number]) => {
         if (!physicsReady) return
 
         setPhysicsReady(false) // Reset physics for new scene
         setCurrentScene(newScene)
+        setCurrentSpawnPosition(newSpawnPosition)
 
     }, [physicsReady])
 
     // Map door IDs to scene types
-    const handleDoorEnter = useCallback((doorId: string) => {
+    const handleDoorEnter = useCallback((doorId: string, newSpawnPosition: [number, number, number]) => {
         const doorToScene: Record<string, SceneType> = {
             'A': 'room-Q&A',
             'B': 'room-music-videos',
@@ -118,7 +108,7 @@ export default function WorldScene() {
         }
         const targetScene = doorToScene[doorId]
         if (targetScene) {
-            handleSceneChange(targetScene)
+            handleSceneChange(targetScene, newSpawnPosition)
         }
     }, [handleSceneChange])
 
@@ -154,16 +144,14 @@ export default function WorldScene() {
                     stencil: false,
                 }}
                 onCreated={({ gl }) => {
-                    gl.setClearColor(new Color(0, 0, 0))
                 }}>
                 <CanvasLoader />
+                <Environment files="/world/skybox/night-sky.hdr" environmentIntensity={0.6} background={true} backgroundIntensity={0.1} />
                 <Physics paused={!physicsReady}>
                     {/* Render current scene */}
                     {currentScene === 'hallway' && (
                         <>
                             <ambientLight intensity={0.3} />
-                                
-                            <Environment preset="apartment" environmentIntensity={0.7} background={false} environmentRotation={[0, - Math.PI / 2, 0]}/>
                             <Hallway 
                                 onReady={() => setPhysicsReady(true)} 
                                 onDoorEnter={handleDoorEnter}
@@ -176,8 +164,6 @@ export default function WorldScene() {
                             <TargetedDirectionalLight position={[0, 4, 0]} target={[0, 0, 5.5]} intensity={0.5} />
                             
                             <ambientLight intensity={0.4} />
-                            
-                            <Environment preset="apartment" environmentIntensity={0.4} background={false}/>
                             <RoomQA
                                 onReady={() => setPhysicsReady(true)}
                                 onDoorEnter={handleDoorEnter} />
@@ -187,8 +173,6 @@ export default function WorldScene() {
                     {currentScene === 'room-music-videos' && (
                         <>
                             <ambientLight intensity={0.4} />
-                            
-                            <Environment preset="apartment" environmentIntensity={0.4} background={false}/>
                             <RoomMusicVideos
                                 onReady={() => setPhysicsReady(true)}
                                 onDoorEnter={handleDoorEnter} />
@@ -198,7 +182,7 @@ export default function WorldScene() {
                     {physicsReady && (
                         <KeyboardControls map={keyboardMap}>
                             <Ecctrl
-                                position={ROOM_SPAWN_POSITIONS[currentScene]}
+                                position={currentSpawnPosition}
                                 capsuleHalfHeight={0.5} capsuleRadius={0.3}
                                 camInitDir={{ x: 0, y: currentScene === 'hallway' ? Math.PI / 2 : 0 }}
                                 characterInitDir={currentScene === 'hallway' ? Math.PI / 2 : 0}

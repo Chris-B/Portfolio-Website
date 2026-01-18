@@ -83,7 +83,7 @@ export function Hallway({ onReady, onDoorEnter }: MapProps) {
           name={door.id}
           position={door.position.toArray()}
           onEnter={() => {
-            onDoorEnter?.(door.id)
+            onDoorEnter?.(door.id, [0, 1.5, -3])
           }}
         />
       ))}

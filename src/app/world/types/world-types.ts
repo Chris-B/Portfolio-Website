@@ -10,7 +10,7 @@ export interface DoorSensorProps {
 
 export interface MapProps {
   onReady?: () => void
-  onDoorEnter?: (doorId: string) => void
+  onDoorEnter?: (doorId: string, spawnPosition: [number, number, number]) => void
 }
 
 export interface OverlayProps {

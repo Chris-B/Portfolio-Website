@@ -84,7 +84,7 @@ export function RoomMusicVideos({ onReady, onDoorEnter }: MapProps) {
                 position={door.position.toArray()}
                 onEnter={() => {
                     pauseAllMusicVideos()
-                    onDoorEnter?.(door.id)
+                    onDoorEnter?.(door.id, [10, 1.5, 0])
                 }}
             />}
 
