@@ -1,10 +1,14 @@
-// eslint-disable-next-line
-const getAccessToken = async (): Promise<any> => {
+
+/**
+ * Gets an access token from the Spotify api using our refresh token
+ * @returns {access_token: string} The access token
+ */
+const getAccessToken = async (): Promise<{ access_token: string }> => {
 
   const refresh_token = process.env.SPOTIFY_REFRESH_TOKEN;
 
   if(!refresh_token)
-    return
+    return { access_token: "" }
 
   const response = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
@@ -24,8 +28,14 @@ const getAccessToken = async (): Promise<any> => {
 
 };
 
+/**
+ * Gets the currently playing song from the Spotify api
+ * Requires a live access token
+ * 
+ * @returns The currently playing song response
+ */
 export const currentlyPlayingSong = async () => {
-  // eslint-disable-next-line
+
   const { access_token } = await getAccessToken();
 
   return fetch("https://api.spotify.com/v1/me/player/currently-playing", {

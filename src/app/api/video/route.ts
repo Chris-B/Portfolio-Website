@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
 
+/**
+ * Handles GET requests to the /api/video endpoint.
+ * Used for future video streamiing in the 3D music video room.
+ * 
+ * @param req - The request object containing the URL query parameter.
+ * @returns A NextResponse object containing the JSON response {status, VideoResponseSchema} from the upstream video endpoint.
+ */
 export async function GET(req: Request) {
   try {
     const base = process.env.API_ENDPOINT;

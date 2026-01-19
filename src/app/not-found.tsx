@@ -1,102 +1,59 @@
-'use client'
+"use client";
 
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, Ghost } from "lucide-react"
 import Link from "next/link"
-import { AlertTriangle } from "lucide-react"
 
-const GridLine: React.FC<{ className: string }> = ({ className }) => (
-  <div className={className}></div>
-)
-
+/**
+ * 404 Component. Used when a page is not found.
+ * 
+ * @returns 404 Component
+ */
 export default function NotFound() {
-  const verticalLines = Array.from({ length: 6 }, (_, i) => (
-    <GridLine key={`v-${i}`} className="h-full w-px bg-cyan-500/20" />
-  ))
-
-  const horizontalLines = Array.from({ length: 6 }, (_, i) => (
-    <GridLine key={`h-${i}`} className="w-full h-px bg-cyan-500/20" />
-  ))
-
   return (
-    <main className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Cyberpunk-inspired background elements */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
-      </div>
+    <main className="min-h-screen bg-background text-foreground overflow-hidden relative">
+      {/* Animated background grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
 
-      {/* Grid lines */}
-      <div className="absolute inset-0 z-10 grid grid-cols-6 gap-2 opacity-20">
-        {verticalLines}
-        {horizontalLines}
-      </div>
+      {/* Gradient orbs */}
+      <div className="absolute top-1/3 -left-32 w-96 h-96 bg-secondary/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/3 -right-32 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
 
-      {/* 404 content */}
-      <div className="z-20 text-center relative">
-        <AlertTriangle className="w-24 h-24 text-yellow-500 mx-auto mb-6 animate-pulse" />
-        <h1 className="text-6xl font-bold mb-4 text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-purple-500 animate-pulse">
-          404
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6">
+        {/* Ghost icon */}
+        <div className="p-6 bg-foreground/5 border border-foreground/10 rounded-full mb-8">
+          <Ghost className="w-16 h-16 text-secondary" />
+        </div>
+
+        {/* 404 text */}
+        <h1 className="text-8xl md:text-9xl font-bold tracking-tighter mb-4">
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary">
+            404
+          </span>
         </h1>
-        <h2 className="text-3xl font-bold mb-6 text-gray-300">Page Not Found</h2>
-        <p className="text-xl text-gray-400 mb-8">The pathway you&apos;re seeking doesn&apos;t exist.</p>
+
+        <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">
+          Lost in the Void
+        </h2>
+
+        <p className="text-foreground/60 text-center max-w-md mb-8 leading-relaxed">
+          The page you&apos;re looking for doesn&apos;t exist in this world. 
+        </p>
+
+        {/* Decorative line */}
+        <div className="w-24 h-1 bg-linear-to-r from-primary to-secondary rounded-full mb-8" />
+
+        {/* Back button */}
         <Link href="/">
-          <button className="group">
-            <span className="sr-only">Return to Home</span>
-            {'RETURN'.split('').map((letter, index) => (
-              <span
-                key={index}
-                className="inline-block text-3xl font-bold transition-all duration-300 ease-in-out
-                           hover:text-cyan-400 group-hover:animate-float"
-                style={{
-                  textShadow: `
-                    1px 1px 0 #8B5CF6,
-                    2px 2px 0 #7C3AED,
-                    3px 3px 0 #6D28D9,
-                    4px 4px 0 #5B21B6,
-                    5px 5px 0 #4C1D95,
-                    6px 6px 10px rgba(0, 0, 0, 0.5)
-                  `,
-                  animation: `float 2s ease-in-out infinite ${index * 0.1}s`,
-                  color: '#E5E7EB', // Light gray color
-                }}
-              >
-                {letter}
-              </span>
-            ))}
-          </button>
+          <Button
+            size="lg"
+            className="bg-foreground/5 border border-foreground/20 hover:bg-foreground/10 text-foreground font-semibold px-8 py-6 rounded-xl transition-all duration-300 hover:border-primary/50 group"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
+            Return Home
+          </Button>
         </Link>
       </div>
-
-      {/* Keyframe animations */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </main>
   )
 }
