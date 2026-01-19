@@ -29,10 +29,7 @@ export default function Overlay({ currentScene }: OverlayProps) {
     if (!isCanvasLoaded) return null
 
     return (
-        <>
-            {isTouchDevice && isControlsOpen && (
-                <MovementControls />
-            )}
+        <div className="fixed bottom-[70px] left-0 right-0 z-50 mx-8 flex flex-col gap-0 pointer-events-none">
             {!isTouchDevice && (
                 <ControlLegend />
             )}
@@ -43,6 +40,10 @@ export default function Overlay({ currentScene }: OverlayProps) {
             {currentScene === 'room-music-videos' && (
                 <MusicVideosOverlay isTouchDevice={isTouchDevice} />
             )}
-        </>
+
+            {isTouchDevice && isControlsOpen && (
+                <MovementControls />
+            )}
+        </div>
     )
 }

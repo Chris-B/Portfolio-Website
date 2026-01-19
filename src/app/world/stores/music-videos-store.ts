@@ -55,7 +55,7 @@ export const getMusicVideoStoreInstance = (id: string): StoreApi<MusicVideoState
       audio: null,
       videoSrc: null,
       audioBuffer: null,
-      depthEffect: 2,
+      depthEffect: 3,
       currentTime: 0,
       volume: 0.5,
       readyForControl: false,

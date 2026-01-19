@@ -49,17 +49,21 @@ export default function QAOverlay({isTouchDevice}: RoomOverlayProps) {
         toggleControls(false)
     }
 
-    if (!isTouchDevice) return <AvatarChat />
+    if (!isTouchDevice) return (
+        <div className="flex justify-center">
+            <AvatarChat ref={chatContainerRef}/>
+        </div>
+    )
 
     return (
         <>
             {isChatOpen && (
-                <div ref={chatContainerRef}>
-                    <AvatarChat />
+                <div className="flex justify-center">
+                    <AvatarChat ref={chatContainerRef}/>
                 </div>
             )}
             {!isChatOpen && (
-                <div className="fixed bottom-[19%] left-[5%] right-[5%] pointer-events-none z-50 p-4 flex justify-end">
+                <div className="pointer-events-none z-50 flex justify-end m-0">
                     <Button
                         variant="outline"
                         size="lg"

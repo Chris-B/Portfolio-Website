@@ -3,7 +3,7 @@
 import { useEffect, useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { AudioListener, Audio, AudioAnalyser, VideoTexture, AudioLoader, PlaneGeometry, ShaderMaterial, Mesh, TextureLoader } from "three";
-import { useMusicVideoStore } from "@/app/world/stores/music-videos-store";
+import { getMusicVideoStoreInstance, useMusicVideoStore } from "@/app/world/stores/music-videos-store";
 import { useShallow } from "zustand/shallow";
 import VideoMeshShader from "./shaders/VideoMeshShader";
 
@@ -61,9 +61,9 @@ function createAudioFromBuffer(audioBuffer: AudioBuffer): { audio: Audio, analys
     audio.setLoop(true);
     audio.autoplay = false;
     audio.setVolume(0.5);
-    
+
     const analyser = new AudioAnalyser(audio, 2048);
-    
+
     return { audio, analyser };
 }
 
@@ -94,22 +94,22 @@ type VideoMesh3DProps = {
  * @param subdivisions - The number of subdivisions for the video mesh
  * @returns The VideoMesh3D component
  */
-export function VideoMesh3D({ 
-    id, 
+export function VideoMesh3D({
+    id,
     videoSrc,
     posterSrc,
-    position, 
-    rotation, 
+    position,
+    rotation,
     scale,
     subdivisions = 128
 }: VideoMesh3DProps) {
     const meshRef = useRef<Mesh>(null);
     const geometryRef = useRef<PlaneGeometry | null>(null);
     const materialRef = useRef<ShaderMaterial | null>(null);
-    
+
     /* Zustand store values for the managed video mesh. Accessed shallowly by id. */
     const [videoElement, videoLoaded, audioLoaded, audio, depthEffect, currentTime, isPlaying, volume, readyForControl] = useMusicVideoStore(id, useShallow((state) => [state.videoElement, state.videoLoaded, state.audioLoaded, state.audio, state.depthEffect, state.currentTime, state.isPlaying, state.volume, state.readyForControl]));
-    const [setLoaded, setAudioLoaded, setVideoElement, setAudio, setCurrentTime, setReadyForControl] = useMusicVideoStore(id, useShallow((state) => [state.setLoaded, state.setAudioLoaded, state.setVideoElement, state.setAudio, state.setCurrentTime, state.setReadyForControl]));
+    const [setLoaded, setAudioLoaded, setVideoElement, setAudio, setCurrentTime, setReadyForControl, setIsPlaying] = useMusicVideoStore(id, useShallow((state) => [state.setLoaded, state.setAudioLoaded, state.setVideoElement, state.setAudio, state.setCurrentTime, state.setReadyForControl, state.setIsPlaying]));
 
     const lastCurrentTimeRef = useRef(currentTime);
 
@@ -258,7 +258,7 @@ export function VideoMesh3D({
             // Always reload video on mobile Safari to ensure fresh data
             const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
             const needsReload = videoElement.readyState < 2 || (isSafari && videoElement.readyState < 4);
-            
+
             const ensureVideoTexture = () => {
                 if (!videoTextureRef.current) {
                     videoTextureRef.current = new VideoTexture(videoElement);
@@ -274,7 +274,7 @@ export function VideoMesh3D({
                     console.warn('Video src was lost, this should not happen');
                     return;
                 }
-                
+
                 videoElement.play()
                     .then(() => {
                         // Switch from poster to video texture when playing
@@ -296,7 +296,7 @@ export function VideoMesh3D({
                                     audio.offset = videoElement.currentTime;
                                     audio.play();
                                 })
-                                .catch(() => {});
+                                .catch(() => { });
                         }, { once: true });
                     });
             };
@@ -314,6 +314,14 @@ export function VideoMesh3D({
         }
     }, [isPlaying, videoElement, audio, material]);
 
+    /* Pause on device rotation to prevent desync */
+    useEffect(() => {
+        if (!isPlaying) return;
+        const pause = () => setIsPlaying(false);
+        window.addEventListener('orientationchange', pause);
+        return () => window.removeEventListener('orientationchange', pause);
+    }, [isPlaying, setIsPlaying]);
+
     /* Update audio volume when value in store changes */
     useEffect(() => {
         if (!audio) return;
@@ -323,7 +331,7 @@ export function VideoMesh3D({
     /* Update shader uniforms and update currentTime in the store for live UI updates */
     useFrame(({ clock }) => {
         if (!meshRef.current) return;
-        
+
         const mat = meshRef.current.material as ShaderMaterial;
         mat.uniforms.iTime!.value = clock.elapsedTime;
 

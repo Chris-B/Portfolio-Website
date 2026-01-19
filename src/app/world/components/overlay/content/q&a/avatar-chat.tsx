@@ -21,7 +21,7 @@ import { SuggestedQuestions } from '@/app/world/tables/world-tables'
  * 
  * @returns The avatar chat component.
  */
-export default function AvatarChat() {
+export default function AvatarChat({ref}: {ref: React.RefObject<HTMLDivElement | null>}) {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
@@ -98,7 +98,7 @@ export default function AvatarChat() {
   }
 
   return (
-    <div className="fixed left-1/2 bottom-[7%] z-50 w-[92vw] -translate-x-1/2 transform md:w-[520px]">
+    <div ref={ref} className="z-50 w-[92vw] transform md:w-[520px] pointer-events-auto">
       <div className="rounded-lg border border-primary/30 bg-background/80 p-3 text-foreground backdrop-blur-md">
         <div className="max-h-56 space-y-2 overflow-y-auto pr-1 border-b border-foreground/30">
           {messages.length === 0 ? (

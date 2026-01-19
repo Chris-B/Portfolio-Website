@@ -5,7 +5,7 @@
  * @returns The control legend component.
  */
 export const ControlLegend = () => (
-    <div className="fixed left-[2%] top-[10%] z-50 w-[200px]">
+    <div className="fixed left-[2%] top-[10%] z-50 w-[200px] pointer-events-auto">
         <div className="rounded-lg border border-primary/30 bg-background/70 p-3 text-foreground backdrop-blur-md">
             <div className="max-h-56 space-y-2 overflow-y-auto pr-1">
                 <div className="text-sm text-foreground/70 font-bold">

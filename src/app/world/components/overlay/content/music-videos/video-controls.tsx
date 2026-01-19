@@ -18,7 +18,7 @@ import { useOverlayStore } from '@/app/world/stores/overlay-store'
  * 
  * @returns The video controls component.
  */
-export default function VideoControls() {
+export default function VideoControls({ref}: {ref: React.RefObject<HTMLDivElement | null>}) {
   const [musicVideoSelection, setMusicVideoSelection] = useOverlayStore(useShallow((state) => [state.musicVideoSelection, state.setMusicVideoSelection] as const))
 
   // Use hooks at top level for reactive state
@@ -72,7 +72,7 @@ export default function VideoControls() {
   if (!readyForControlMiddle || !readyForControlLeft || !readyForControlRight) return null
 
   return (
-    <div className="fixed bottom-[7%] left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-md text-foreground p-4 border border-primary/30 rounded-2xl z-50 w-[90%] max-w-xs">
+    <div ref={ref} className="bg-background/80 backdrop-blur-md text-foreground p-4 border border-primary/30 rounded-2xl z-50 w-[90%] max-w-xs pointer-events-auto">
       <div className="flex justify-center gap-2 mb-4">
         {["Left", "Middle", "Right"].map((videoId) => (
           <button

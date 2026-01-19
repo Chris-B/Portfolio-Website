@@ -87,7 +87,7 @@ export default function MovementControls() {
   }, [setJoystick, pressButton1, releaseAllButtons])
 
   return (
-    <div className="fixed bottom-[5%] left-[5%] right-[5%] z-50 pointer-events-none p-4 flex justify-between items-end">
+    <div className="z-50 pointer-events-none flex justify-between items-end m-0">
       {/* Joystick */}
       <div
         ref={joystickRef}

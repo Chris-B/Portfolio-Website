@@ -49,17 +49,21 @@ export default function MusicVideoOverlay({isTouchDevice}: RoomOverlayProps) {
         toggleControls(false)
     }
 
-     if (!isTouchDevice) return <VideoControls />
+    if (!isTouchDevice) return (
+        <div className="flex justify-center">
+            <VideoControls ref={videoControlsContainerRef}/>
+        </div>
+    )
 
     return (
         <>
             {musicVideoControlsOpen && (
-                <div ref={videoControlsContainerRef}>
-                    <VideoControls />
+                <div className="flex justify-center">
+                    <VideoControls ref={videoControlsContainerRef}/>
                 </div>
             )}
             {!musicVideoControlsOpen && (
-                <div className="fixed bottom-[19%] left-[5%] right-[5%] pointer-events-none z-50 p-4 flex justify-end">
+                <div className="pointer-events-none z-50 flex justify-end m-0">
                     <Button
                         variant="outline"
                         size="lg"
