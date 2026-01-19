@@ -13,7 +13,7 @@ export default function NotFound() {
   return (
     <main className="min-h-screen bg-background text-foreground overflow-hidden relative">
       {/* Animated background grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-size-[64px_64px]" />
 
       {/* Gradient orbs */}
       <div className="absolute top-1/3 -left-32 w-96 h-96 bg-secondary/20 rounded-full blur-3xl" />

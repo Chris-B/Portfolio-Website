@@ -8,7 +8,7 @@ import { useCompressedGLTF } from '@/app/world/hooks/use-compressed-gltf'
  * @returns CharacterModel primitivecomponent
  */
 export default function CharacterModel() {
-  const { scene } = useCompressedGLTF('/world/Character-Compressed.glb')
+  const { scene } = useCompressedGLTF('/world/Airplane-Compressed.glb')
   const clonedScene = useMemo(() => {
     const clone = scene.clone(true)
     clone.traverse((child) => {
@@ -28,8 +28,9 @@ export default function CharacterModel() {
   return (
     <primitive 
       object={clonedScene} 
-      scale={0.34} 
-      position={[0, -0.5, 0]}
+      scale={0.003} 
+      rotation={[0, Math.PI / 2, 0]}
+      position={[0, 0, 0]}
     />
   )
 }

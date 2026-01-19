@@ -69,7 +69,12 @@ export default function VideoControls({ref}: {ref: React.RefObject<HTMLDivElemen
 
   const getState = (id: string) => stateMap[id as keyof typeof stateMap]
 
-  if (!readyForControlMiddle || !readyForControlLeft || !readyForControlRight) return null
+  if (!readyForControlMiddle || !readyForControlLeft || !readyForControlRight) 
+    return (
+      <div ref={ref} className="bg-background/80 backdrop-blur-md text-foreground p-4 border border-primary/30 rounded-2xl z-50 w-[90%] max-w-xs text-center pointer-events-auto">
+        Loading Video Controls...
+      </div>
+    ) 
 
   return (
     <div ref={ref} className="bg-background/80 backdrop-blur-md text-foreground p-4 border border-primary/30 rounded-2xl z-50 w-[90%] max-w-xs pointer-events-auto">
